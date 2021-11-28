@@ -239,6 +239,11 @@
 <span id="239">239</span>
 <span id="240">240</span>
 <span id="241">241</span>
+<span id="242">242</span>
+<span id="243">243</span>
+<span id="244">244</span>
+<span id="245">245</span>
+<span id="246">246</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Exports source code object and related items.</span>
 
 <span class="kw">mod</span> <span class="ident">indexing</span>;
@@ -271,7 +276,9 @@
     <span class="ident">newlines</span>: <span class="ident">IndexArray</span>,
 }
 
-<span class="doccomment">/// A source code object, such as read from a file.</span>
+<span class="doccomment">/// A source code object, such as read from a file. Cloning this object results</span>
+<span class="doccomment">/// in simply incrementing a reference counter, thus sharing the source code</span>
+<span class="doccomment">/// object.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Source</span> {
     <span class="doccomment">/// The inner structure containing the actual data.</span>
@@ -279,7 +286,9 @@
 }
 
 <span class="kw">impl</span> <span class="ident">Source</span> {
-    <span class="doccomment">/// Creates a new source code object given its name and its contentss.</span>
+    <span class="doccomment">/// Creates a new source code object given its name and its contents.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// Contents are rearranged as grapheme clusters.</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span><span class="op">&lt;</span><span class="ident">S0</span>, <span class="ident">S1</span><span class="op">&gt;</span>(<span class="ident">name</span>: <span class="ident">S0</span>, <span class="ident">contents</span>: <span class="ident">S1</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>
     <span class="kw">where</span>
         <span class="ident">S0</span>: <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">Box</span><span class="op">&lt;</span><span class="ident">str</span><span class="op">&gt;</span><span class="op">&gt;</span>,
@@ -326,7 +335,7 @@
     }
 
     <span class="doccomment">/// Iterator over the newline indices of the source, where indices are in</span>
-    <span class="doccomment">/// terms of segments.</span>
+    <span class="doccomment">/// terms of segments/grapheme clusters.</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">newline_indices</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">NewlineIndices</span> {
         <span class="ident">NewlineIndices</span> { <span class="ident">inner</span>: <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">segments</span>.<span class="ident">iter</span>() }
     }
@@ -363,6 +372,7 @@
     }
 
     <span class="doccomment">/// Indexes this source. It can be a single `usize` or a range of `usize`.</span>
+    <span class="doccomment">/// Indices are given in terms of grapheme clusters/segments.</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">indexer</span>: <span class="ident">I</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">I::Output</span><span class="op">&gt;</span>
     <span class="kw">where</span>
         <span class="ident">I</span>: <span class="ident">SourceIndex</span>,
