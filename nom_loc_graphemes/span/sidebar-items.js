@@ -1,0 +1,1 @@
+initSidebarItems({"struct":[["Segments","Iterator over segments of a [`Span`]."],["Span","A span (a range) in the source code."],["SpanContent","A type that, when displayed, shows the span contents, rather than location."]]});

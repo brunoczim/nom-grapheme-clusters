@@ -1,0 +1,1 @@
+window.ALL_CRATES = ["memchr","minimal_lexical","nom","nom_loc_graphemes","unicode_segmentation"];
