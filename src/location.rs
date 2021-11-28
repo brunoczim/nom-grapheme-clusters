@@ -40,7 +40,8 @@ impl Location {
         Self::new_unchecked(source, position)
     }
 
-    /// The string segment position in the source code.
+    /// This location's position in the source code in terms of grapheme
+    /// clusters/segments.
     pub fn position(&self) -> usize {
         self.position
     }
@@ -56,19 +57,22 @@ impl Location {
     }
 
     /// Finds the line and column (respectively) of this location in the source
-    /// code.
+    /// code. Line and column count grapheme clusters/segments, not bytes nor
+    /// characters.
     pub fn line_column(&self) -> (usize, usize) {
         let line = self.source.line(self.position);
         let line_start = self.source.line_start(line);
         (line, self.position - line_start)
     }
 
-    /// Finds the line of this location in the source code.
+    /// Finds the line of this location in the source code. Line counts grapheme
+    /// clusters/segments, not bytes nor characters.
     pub fn line(&self) -> usize {
         self.source.line(self.position)
     }
 
-    /// Finds the column of this location in the source code.
+    /// Finds the column of this location in the source code. Column counts
+    /// grapheme clusters/segments, not bytes nor characters.
     pub fn column(&self) -> usize {
         let (_, column) = self.line_column();
         column
@@ -85,8 +89,7 @@ impl Location {
         LocatedSegment { location: self.clone() }
     }
 
-    /// Creates a [`Span`](crate::span::Span) containing the whole line this
-    /// location is in.
+    /// Creates a [`Span`] containing the whole line this location is in.
     pub fn line_span(&self) -> Span {
         let line = self.line();
         let init = self.source().line_start(line);

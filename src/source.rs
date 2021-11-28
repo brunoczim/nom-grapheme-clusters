@@ -30,7 +30,9 @@ struct SourceInner {
     newlines: IndexArray,
 }
 
-/// A source code object, such as read from a file.
+/// A source code object, such as read from a file. Cloning this object results
+/// in simply incrementing a reference counter, thus sharing the source code
+/// object.
 #[derive(Debug, Clone)]
 pub struct Source {
     /// The inner structure containing the actual data.
@@ -38,7 +40,9 @@ pub struct Source {
 }
 
 impl Source {
-    /// Creates a new source code object given its name and its contentss.
+    /// Creates a new source code object given its name and its contents.
+    ///
+    /// Contents are rearranged as grapheme clusters.
     pub fn new<S0, S1>(name: S0, contents: S1) -> Self
     where
         S0: Into<Box<str>>,
@@ -85,7 +89,7 @@ impl Source {
     }
 
     /// Iterator over the newline indices of the source, where indices are in
-    /// terms of segments.
+    /// terms of segments/grapheme clusters.
     pub fn newline_indices(&self) -> NewlineIndices {
         NewlineIndices { inner: self.inner.segments.iter() }
     }
@@ -122,6 +126,7 @@ impl Source {
     }
 
     /// Indexes this source. It can be a single `usize` or a range of `usize`.
+    /// Indices are given in terms of grapheme clusters/segments.
     pub fn get<I>(&self, indexer: I) -> Option<&I::Output>
     where
         I: SourceIndex,
