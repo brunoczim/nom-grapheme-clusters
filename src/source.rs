@@ -1,3 +1,5 @@
+//! Exports source code object and related items.
+
 mod indexing;
 
 #[cfg(test)]

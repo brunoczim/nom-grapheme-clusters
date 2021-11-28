@@ -10,9 +10,6 @@ use std::{
 };
 
 /// The location in a source code.
-///
-/// See [`Reader::mark`](crate::reader::Reader::mark) and
-/// [`Reader::location`](crate::reader::Reader::location) to create a location.
 #[derive(Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct Location {
     /// The source code object.
@@ -130,8 +127,10 @@ where
     }
 }
 
+/// A grapheme cluster segment with its location in the source code.
 #[derive(Clone, Debug)]
 pub struct LocatedSegment {
+    /// Inner location.
     location: Location,
 }
 

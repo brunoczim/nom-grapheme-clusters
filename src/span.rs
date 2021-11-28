@@ -17,8 +17,8 @@ use std::{
 
 /// A span (a range) in the source code.
 ///
-/// See [`Reader::mark`](crate::reader::Reader::mark) and
-/// [`Reader::span`](crate::reader::Reader::span) to create a span.
+/// It can be created with the constructor [`Span::new`], or with
+/// [`Source::full_span`].
 #[derive(Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct Span {
     /// Start of the span.
@@ -182,6 +182,7 @@ impl IntoIterator for Span {
 /// Iterator over segments of a [`Span`].
 #[derive(Debug, Clone)]
 pub struct Segments {
+    /// Span being iterated.
     span: Span,
 }
 
