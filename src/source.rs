@@ -1,5 +1,8 @@
 mod indexing;
 
+#[cfg(test)]
+mod test;
+
 use crate::{location::Location, span::Span};
 pub use indexing::SourceIndex;
 use indexing::{IndexArray, IndexArrayBuilder, IndexArrayIter};
@@ -73,14 +76,16 @@ impl Source {
         &self.inner.contents
     }
 
-    /// Iterator over the segments of the source.
-    pub fn segments(&self) -> SegmentsIter {
-        SegmentsIter { inner: self.inner.segments.iter() }
+    /// Iterator over the segment indices of the source, where indices are in
+    /// terms of bytes.
+    pub fn seg_byte_indices(&self) -> SegmentByteIndices {
+        SegmentByteIndices { inner: self.inner.segments.iter() }
     }
 
-    /// Iterator over the newlines of the source.
-    pub fn newlines(&self) -> NewlinesIter {
-        NewlinesIter { inner: self.inner.segments.iter() }
+    /// Iterator over the newline indices of the source, where indices are in
+    /// terms of segments.
+    pub fn newline_indices(&self) -> NewlineIndices {
+        NewlineIndices { inner: self.inner.segments.iter() }
     }
 
     /// Returns the line number where the given position is contained, starting
@@ -175,14 +180,15 @@ impl fmt::Display for Source {
     }
 }
 
-/// Iterator over the segments of a source. Double-ended and sized.
+/// Iterator over the segment indices of a source. Indices are in terms of
+/// bytes. Double-ended and sized.
 #[derive(Debug)]
-pub struct SegmentsIter<'src> {
+pub struct SegmentByteIndices<'src> {
     /// The inner iterator over the indices.
     inner: IndexArrayIter<'src>,
 }
 
-impl<'src> Iterator for SegmentsIter<'src> {
+impl<'src> Iterator for SegmentByteIndices<'src> {
     type Item = usize;
 
     fn next(&mut self) -> Option<Self::Item> {
@@ -195,22 +201,23 @@ impl<'src> Iterator for SegmentsIter<'src> {
     }
 }
 
-impl<'src> DoubleEndedIterator for SegmentsIter<'src> {
+impl<'src> DoubleEndedIterator for SegmentByteIndices<'src> {
     fn next_back(&mut self) -> Option<Self::Item> {
         self.inner.next_back()
     }
 }
 
-impl<'array> ExactSizeIterator for SegmentsIter<'array> {}
+impl<'array> ExactSizeIterator for SegmentByteIndices<'array> {}
 
-/// Iterator over the newlines of a source. Double-ended and sized.
+/// Iterator over the newline indices of a source. Indices are in term of
+/// segments, not bytes nor characters. Double-ended and sized.
 #[derive(Debug)]
-pub struct NewlinesIter<'src> {
+pub struct NewlineIndices<'src> {
     /// The inner iterator over the indices.
     inner: IndexArrayIter<'src>,
 }
 
-impl<'src> Iterator for NewlinesIter<'src> {
+impl<'src> Iterator for NewlineIndices<'src> {
     type Item = usize;
 
     fn next(&mut self) -> Option<Self::Item> {
@@ -223,10 +230,10 @@ impl<'src> Iterator for NewlinesIter<'src> {
     }
 }
 
-impl<'src> DoubleEndedIterator for NewlinesIter<'src> {
+impl<'src> DoubleEndedIterator for NewlineIndices<'src> {
     fn next_back(&mut self) -> Option<Self::Item> {
         self.inner.next_back()
     }
 }
 
-impl<'array> ExactSizeIterator for NewlinesIter<'array> {}
+impl<'array> ExactSizeIterator for NewlineIndices<'array> {}

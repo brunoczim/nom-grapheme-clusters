@@ -1,5 +1,8 @@
 //! This module provides ways of tracking ranges (spans) in the source code.
 
+#[cfg(test)]
+mod test;
+
 use crate::{
     location::{LocatedSegment, Location},
     source::Source,
@@ -81,6 +84,19 @@ impl Span {
         SpanContent { span: self.clone() }
     }
 
+    /// Expands this span in order to contain the whole lines the original span
+    /// contains.
+    pub fn expand_lines(&self) -> Span {
+        let start_line = self.start().line();
+        let end_line = self.end().line();
+        let init = self.source().line_start(start_line);
+        let end = self
+            .source()
+            .try_line_start(end_line + 1)
+            .unwrap_or(self.source().len());
+        Self::new(Location::new(self.source().clone(), init), end - init)
+    }
+
     /// Slices this span to the given range. Returns `None` if the range is
     /// invalid.
     pub fn slice<R>(&self, range: R) -> Option<Self>
@@ -93,7 +109,7 @@ impl Span {
             Bound::Unbounded => 0,
         };
 
-        let end = match range.start_bound() {
+        let end = match range.end_bound() {
             Bound::Included(position) => position.saturating_add(1),
             Bound::Excluded(&position) => position,
             Bound::Unbounded => self.len(),
@@ -110,17 +126,9 @@ impl Span {
         }
     }
 
-    /// Expands this span in order to contain the whole lines the original span
-    /// contains.
-    pub fn expand_lines(&self) -> Span {
-        let start_line = self.start().line();
-        let end_line = self.end().line();
-        let init = self.source().line_start(start_line);
-        let end = self
-            .source()
-            .try_line_start(end_line + 1)
-            .unwrap_or(self.source().len());
-        Self::new(Location::new(self.source().clone(), init), end - init)
+    /// Creates an iterator over located grapheme cluster segments.
+    pub fn segments(&self) -> Segments {
+        self.clone().into_iter()
     }
 }
 
@@ -164,20 +172,20 @@ where
 
 impl IntoIterator for Span {
     type Item = LocatedSegment;
-    type IntoIter = SegmentsIter;
+    type IntoIter = Segments;
 
     fn into_iter(self) -> Self::IntoIter {
-        SegmentsIter { span: self }
+        Segments { span: self }
     }
 }
 
 /// Iterator over segments of a [`Span`].
 #[derive(Debug, Clone)]
-pub struct SegmentsIter {
+pub struct Segments {
     span: Span,
 }
 
-impl Iterator for SegmentsIter {
+impl Iterator for Segments {
     type Item = LocatedSegment;
 
     fn next(&mut self) -> Option<Self::Item> {
@@ -296,9 +304,9 @@ where
 
 impl IntoIterator for SpanContent {
     type Item = LocatedSegment;
-    type IntoIter = SegmentsIter;
+    type IntoIter = Segments;
 
     fn into_iter(self) -> Self::IntoIter {
-        SegmentsIter { span: self.span }
+        Segments { span: self.span }
     }
 }
