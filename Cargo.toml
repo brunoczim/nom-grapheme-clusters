@@ -1,0 +1,8 @@
+[package]
+name = "nom-loc-graphemes"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+unicode-segmentation = "^1.8"
+nom = "^7.1"
