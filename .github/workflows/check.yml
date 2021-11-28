@@ -1,4 +1,4 @@
-name: Nom Located Grapheme Clusters CI - Check
+name: Nom Grapheme Clusters CI - Check
 on: [push, pull_request]
 
 jobs:

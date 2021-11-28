@@ -1,4 +1,4 @@
-name: Nom Located Grapheme Clusters CI - GH Pages
+name: Nom Grapheme Clusters CI - GH Pages
 on: 
   push:
     branches:
