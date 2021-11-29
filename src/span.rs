@@ -22,9 +22,9 @@ use std::{
     cmp::Ordering,
     fmt,
     hash::{Hash, Hasher},
+    iter::Enumerate,
     ops::{Bound, Deref, RangeBounds},
 };
-use unicode_segmentation::UnicodeSegmentation;
 
 /// A span (a range) in the source code.
 ///
@@ -58,6 +58,10 @@ impl Span {
             );
         }
         Self::new_unchecked(start, length)
+    }
+
+    pub fn adhoc(contents: &str) -> Self {
+        Source::new("<adhoc>", contents).full_span()
     }
 
     /// The start location of this span.
@@ -207,20 +211,23 @@ impl InputLength for Span {
 
 impl<R> Slice<R> for Span
 where
-    R: RangeBounds<usize>,
+    R: RangeBounds<usize> + fmt::Debug + Clone,
 {
     fn slice(&self, range: R) -> Self {
-        self.try_slice(range).expect("invalid span range")
+        match self.try_slice(range.clone()) {
+            Some(span) => span,
+            None => panic!("range {:?} invalid on span", range),
+        }
     }
 }
 
 impl InputIter for Span {
     type Item = LocatedSegment;
-    type Iter = IndexedSegments;
+    type Iter = Enumerate<Self::IterElem>;
     type IterElem = Segments;
 
     fn iter_indices(&self) -> Self::Iter {
-        self.indexed_segments()
+        self.iter_elements().enumerate()
     }
 
     fn iter_elements(&self) -> Self::IterElem {
@@ -401,44 +408,6 @@ impl Compare<SpanContent> for Span {
 
     fn compare_no_case(&self, input: SpanContent) -> nom::CompareResult {
         self.compare_no_case(input.span())
-    }
-}
-
-impl<'input> Compare<&'input str> for Span {
-    fn compare(&self, input: &'input str) -> nom::CompareResult {
-        let mut loc_segments = self.segments();
-        let mut input_segments = input.graphemes(true);
-
-        loop {
-            match (loc_segments.next(), input_segments.next()) {
-                (Some(loc_segment), Some(input_segment)) => {
-                    if loc_segment.as_str() != input_segment {
-                        break nom::CompareResult::Error;
-                    }
-                },
-                (None, Some(_)) => break nom::CompareResult::Incomplete,
-                (_, None) => break nom::CompareResult::Ok,
-            }
-        }
-    }
-
-    fn compare_no_case(&self, input: &'input str) -> nom::CompareResult {
-        let mut loc_segments = self.segments();
-        let mut input_segments = input.graphemes(true);
-
-        loop {
-            match (loc_segments.next(), input_segments.next()) {
-                (Some(loc_segment), Some(input_segment)) => {
-                    if loc_segment.as_str().to_lowercase()
-                        != input_segment.to_lowercase()
-                    {
-                        break nom::CompareResult::Error;
-                    }
-                },
-                (None, Some(_)) => break nom::CompareResult::Incomplete,
-                (_, None) => break nom::CompareResult::Ok,
-            }
-        }
     }
 }
 
@@ -659,13 +628,13 @@ impl IntoIterator for SpanContent {
 
 impl InputLength for SpanContent {
     fn input_len(&self) -> usize {
-        self.len()
+        self.span.len()
     }
 }
 
 impl<R> Slice<R> for SpanContent
 where
-    R: RangeBounds<usize>,
+    R: RangeBounds<usize> + fmt::Debug + Clone,
 {
     fn slice(&self, range: R) -> Self {
         Self { span: self.span.slice(range) }
@@ -674,11 +643,11 @@ where
 
 impl InputIter for SpanContent {
     type Item = LocatedSegment;
-    type Iter = IndexedSegments;
+    type Iter = Enumerate<Self::IterElem>;
     type IterElem = Segments;
 
     fn iter_indices(&self) -> Self::Iter {
-        self.indexed_segments()
+        self.iter_elements().enumerate()
     }
 
     fn iter_elements(&self) -> Self::IterElem {
@@ -827,15 +796,5 @@ impl Compare<SpanContent> for SpanContent {
 
     fn compare_no_case(&self, input: SpanContent) -> nom::CompareResult {
         self.compare_no_case(input.span())
-    }
-}
-
-impl<'input> Compare<&'input str> for SpanContent {
-    fn compare(&self, input: &'input str) -> nom::CompareResult {
-        self.span.compare(input)
-    }
-
-    fn compare_no_case(&self, input: &'input str) -> nom::CompareResult {
-        self.span.compare_no_case(input)
     }
 }

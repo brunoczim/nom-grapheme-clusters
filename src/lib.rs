@@ -2,20 +2,20 @@
 //!
 //! # Examples
 //! ```
-//! use nom_grapheme_clusters::{Source, Span};
+//! use nom_grapheme_clusters::{Source, Span, SpanContent};
 //! use nom::{IResult, bytes::complete::tag, combinator::value};
 //!
-//! #[derive(Debug, Clone)]
+//! #[derive(Debug, Clone, PartialEq, Eq)]
 //! struct ParsedAtn;
 //!
-//! fn parse_atn(input: Span) -> IResult<Span, ParsedAtn> {
-//!     value(ParsedAtn, tag("atn̩̊"))(input)
+//! fn parse_atn(input: SpanContent) -> IResult<SpanContent, ParsedAtn> {
+//!     value(ParsedAtn, tag(Span::adhoc("atn̩̊").content()))(input)
 //! }
 //!
 //! # fn main() {
 //! let source = Source::new("file.txt", "atn̩̊");
 //! let span = source.full_span();
-//! println!("{:#?}", parse_atn(span));
+//! assert_eq!(parse_atn(span.content()).unwrap().1, ParsedAtn);
 //! # }
 //! ```
 
