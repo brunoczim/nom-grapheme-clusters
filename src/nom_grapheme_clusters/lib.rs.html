@@ -30,20 +30,20 @@
 <span class="doccomment">//!</span>
 <span class="doccomment">//! # Examples</span>
 <span class="doccomment">//! ```</span>
-<span class="doccomment">//! use nom_grapheme_clusters::{Source, Span};</span>
+<span class="doccomment">//! use nom_grapheme_clusters::{Source, Span, SpanContent};</span>
 <span class="doccomment">//! use nom::{IResult, bytes::complete::tag, combinator::value};</span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//! #[derive(Debug, Clone)]</span>
+<span class="doccomment">//! #[derive(Debug, Clone, PartialEq, Eq)]</span>
 <span class="doccomment">//! struct ParsedAtn;</span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//! fn parse_atn(input: Span) -&gt; IResult&lt;Span, ParsedAtn&gt; {</span>
-<span class="doccomment">//!     value(ParsedAtn, tag(&quot;atn̩̊&quot;))(input)</span>
+<span class="doccomment">//! fn parse_atn(input: SpanContent) -&gt; IResult&lt;SpanContent, ParsedAtn&gt; {</span>
+<span class="doccomment">//!     value(ParsedAtn, tag(Span::adhoc(&quot;atn̩̊&quot;).content()))(input)</span>
 <span class="doccomment">//! }</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! # fn main() {</span>
 <span class="doccomment">//! let source = Source::new(&quot;file.txt&quot;, &quot;atn̩̊&quot;);</span>
 <span class="doccomment">//! let span = source.full_span();</span>
-<span class="doccomment">//! println!(&quot;{:#?}&quot;, parse_atn(span));</span>
+<span class="doccomment">//! assert_eq!(parse_atn(span.content()).unwrap().1, ParsedAtn);</span>
 <span class="doccomment">//! # }</span>
 <span class="doccomment">//! ```</span>
 
