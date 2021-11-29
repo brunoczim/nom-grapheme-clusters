@@ -42,26 +42,81 @@
 <span id="42">42</span>
 <span id="43">43</span>
 <span id="44">44</span>
+<span id="45">45</span>
+<span id="46">46</span>
+<span id="47">47</span>
+<span id="48">48</span>
+<span id="49">49</span>
+<span id="50">50</span>
+<span id="51">51</span>
+<span id="52">52</span>
+<span id="53">53</span>
+<span id="54">54</span>
+<span id="55">55</span>
+<span id="56">56</span>
+<span id="57">57</span>
+<span id="58">58</span>
+<span id="59">59</span>
+<span id="60">60</span>
+<span id="61">61</span>
+<span id="62">62</span>
+<span id="63">63</span>
+<span id="64">64</span>
+<span id="65">65</span>
+<span id="66">66</span>
+<span id="67">67</span>
+<span id="68">68</span>
+<span id="69">69</span>
+<span id="70">70</span>
+<span id="71">71</span>
+<span id="72">72</span>
+<span id="73">73</span>
+<span id="74">74</span>
+<span id="75">75</span>
+<span id="76">76</span>
+<span id="77">77</span>
 </pre><pre class="rust"><code><span class="doccomment">//! This crate provides location for `nom` with support to grapheme clusters.</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! # Examples</span>
 <span class="doccomment">//! ```</span>
-<span class="doccomment">//! use nom_grapheme_clusters::{Source, Span, SpanContent};</span>
+<span class="doccomment">//! use nom_grapheme_clusters::{Source, Span, SpanContent, tag_table};</span>
 <span class="doccomment">//! use nom::{IResult, bytes::complete::tag, combinator::map};</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! #[derive(Debug, Clone)]</span>
+<span class="doccomment">//! struct Tags {</span>
+<span class="doccomment">//!     smth: Span,</span>
+<span class="doccomment">//!     atn: Span,</span>
+<span class="doccomment">//! }</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! #[derive(Debug, Clone, PartialEq, Eq)]</span>
 <span class="doccomment">//! struct ParsedAtn {</span>
 <span class="doccomment">//!     span: Span,</span>
 <span class="doccomment">//! }</span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//! fn parse_atn(input: Span) -&gt; IResult&lt;Span, ParsedAtn&gt; {</span>
-<span class="doccomment">//!     map(tag(Span::adhoc(&quot;atn̩̊&quot;)), |span| ParsedAtn { span })(input)</span>
+<span class="doccomment">//! #[derive(Debug, Clone, PartialEq, Eq)]</span>
+<span class="doccomment">//! struct ParsedSmth {</span>
+<span class="doccomment">//!     span: Span,</span>
+<span class="doccomment">//! }</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! fn parse_smth(tags: &amp;Tags) -&gt; impl FnMut(Span) -&gt; IResult&lt;Span, ParsedAtn&gt; {</span>
+<span class="doccomment">//!     map(tag(tags.smth.clone()), |span| ParsedAtn { span })</span>
+<span class="doccomment">//! }</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! fn parse_atn(tags: &amp;Tags) -&gt; impl FnMut(Span) -&gt; IResult&lt;Span, ParsedAtn&gt; {</span>
+<span class="doccomment">//!     map(tag(tags.atn.clone()), |span| ParsedAtn { span })</span>
 <span class="doccomment">//! }</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! # fn main() {</span>
-<span class="doccomment">//! let source = Source::new(&quot;file.txt&quot;, &quot;atn̩̊a&quot;);</span>
+<span class="doccomment">//! let tags = tag_table! {</span>
+<span class="doccomment">//!     Tags {</span>
+<span class="doccomment">//!         smth: &quot;smth&quot;,</span>
+<span class="doccomment">//!         atn: &quot;atn̩̊&quot;,</span>
+<span class="doccomment">//!     }</span>
+<span class="doccomment">//! };</span>
+<span class="doccomment">//! let source = Source::new(&quot;file.txt&quot;, &quot;atn̩̊smtha&quot;);</span>
+<span class="doccomment">//!</span>
 <span class="doccomment">//! let span = source.full_span();</span>
-<span class="doccomment">//! let (_, parsed) = parse_atn(span).unwrap();</span>
+<span class="doccomment">//! let (span, parsed) = parse_atn(&amp;tags)(span).unwrap();</span>
 <span class="doccomment">//! assert_eq!(parsed.span.as_str(), &quot;atn̩̊&quot;);</span>
 <span class="doccomment">//! assert_eq!(parsed.span.start().position(), 0);</span>
 <span class="doccomment">//! assert_eq!(parsed.span.start().line(), 0);</span>
@@ -71,13 +126,24 @@
 <span class="doccomment">//! assert_eq!(parsed.span.end().line(), 0);</span>
 <span class="doccomment">//! assert_eq!(parsed.span.end().column(), 3);</span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//! let source = Source::new(&quot;file2.txt&quot;, &quot;atn&quot;);</span>
-<span class="doccomment">//! let span = source.full_span();</span>
-<span class="doccomment">//! let result = parse_atn(span);</span>
+<span class="doccomment">//! let (span, parsed) = parse_smth(&amp;tags)(span).unwrap();</span>
+<span class="doccomment">//! assert_eq!(parsed.span.as_str(), &quot;smth&quot;);</span>
+<span class="doccomment">//! assert_eq!(parsed.span.start().position(), 3);</span>
+<span class="doccomment">//! assert_eq!(parsed.span.start().line(), 0);</span>
+<span class="doccomment">//! assert_eq!(parsed.span.start().column(), 3);</span>
+<span class="doccomment">//! assert_eq!(parsed.span.len(), 4);</span>
+<span class="doccomment">//! assert_eq!(parsed.span.end().position(), 7);</span>
+<span class="doccomment">//! assert_eq!(parsed.span.end().line(), 0);</span>
+<span class="doccomment">//! assert_eq!(parsed.span.end().column(), 7);</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! let result = parse_atn(&amp;tags)(span);</span>
 <span class="doccomment">//! assert!(result.is_err());</span>
 <span class="doccomment">//! println!(&quot;{}&quot;, result.unwrap_err());</span>
 <span class="doccomment">//! # }</span>
 <span class="doccomment">//! ```</span>
+
+<span class="attribute">#[<span class="ident">macro_use</span>]</span>
+<span class="kw">mod</span> <span class="ident">macros</span>;
 
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">source</span>;
 <span class="kw">mod</span> <span class="ident">location</span>;
