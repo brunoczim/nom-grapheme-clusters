@@ -209,6 +209,12 @@ impl InputLength for Span {
     }
 }
 
+impl<'this> InputLength for &'this Span {
+    fn input_len(&self) -> usize {
+        self.len()
+    }
+}
+
 impl<R> Slice<R> for Span
 where
     R: RangeBounds<usize> + fmt::Debug + Clone,
@@ -408,6 +414,49 @@ impl Compare<SpanContent> for Span {
 
     fn compare_no_case(&self, input: SpanContent) -> nom::CompareResult {
         self.compare_no_case(input.span())
+    }
+}
+
+impl<'this, 'input> Compare<&'input Span> for &'this Span {
+    fn compare(&self, input: &'input Span) -> nom::CompareResult {
+        (**self).compare(input)
+    }
+
+    fn compare_no_case(&self, input: &'input Span) -> nom::CompareResult {
+        (**self).compare_no_case(input)
+    }
+}
+
+impl<'this> Compare<Span> for &'this Span {
+    fn compare(&self, input: Span) -> nom::CompareResult {
+        (**self).compare(input)
+    }
+
+    fn compare_no_case(&self, input: Span) -> nom::CompareResult {
+        (**self).compare_no_case(input)
+    }
+}
+
+impl<'this, 'input> Compare<&'input SpanContent> for &'this Span {
+    fn compare(&self, input: &'input SpanContent) -> nom::CompareResult {
+        (**self).compare(input)
+    }
+
+    fn compare_no_case(
+        &self,
+        input: &'input SpanContent,
+    ) -> nom::CompareResult {
+        (**self).compare_no_case(input)
+    }
+}
+
+impl<'this> Compare<SpanContent> for &'this Span {
+    fn compare(&self, input: SpanContent) -> nom::CompareResult {
+        (**self).compare(input)
+    }
+
+    fn compare_no_case(&self, input: SpanContent) -> nom::CompareResult {
+        (**self).compare_no_case(input)
     }
 }
 
@@ -632,6 +681,12 @@ impl InputLength for SpanContent {
     }
 }
 
+impl<'this> InputLength for &'this SpanContent {
+    fn input_len(&self) -> usize {
+        self.span.len()
+    }
+}
+
 impl<R> Slice<R> for SpanContent
 where
     R: RangeBounds<usize> + fmt::Debug + Clone,
@@ -796,5 +851,48 @@ impl Compare<SpanContent> for SpanContent {
 
     fn compare_no_case(&self, input: SpanContent) -> nom::CompareResult {
         self.compare_no_case(input.span())
+    }
+}
+
+impl<'this, 'input> Compare<&'input Span> for &'this SpanContent {
+    fn compare(&self, input: &'input Span) -> nom::CompareResult {
+        (**self).compare(input)
+    }
+
+    fn compare_no_case(&self, input: &'input Span) -> nom::CompareResult {
+        (**self).compare_no_case(input)
+    }
+}
+
+impl<'this> Compare<Span> for &'this SpanContent {
+    fn compare(&self, input: Span) -> nom::CompareResult {
+        (**self).compare(input)
+    }
+
+    fn compare_no_case(&self, input: Span) -> nom::CompareResult {
+        (**self).compare_no_case(input)
+    }
+}
+
+impl<'this, 'input> Compare<&'input SpanContent> for &'this SpanContent {
+    fn compare(&self, input: &'input SpanContent) -> nom::CompareResult {
+        (**self).compare(input)
+    }
+
+    fn compare_no_case(
+        &self,
+        input: &'input SpanContent,
+    ) -> nom::CompareResult {
+        (**self).compare_no_case(input)
+    }
+}
+
+impl<'this> Compare<SpanContent> for &'this SpanContent {
+    fn compare(&self, input: SpanContent) -> nom::CompareResult {
+        (**self).compare(input)
+    }
+
+    fn compare_no_case(&self, input: SpanContent) -> nom::CompareResult {
+        (**self).compare_no_case(input)
     }
 }

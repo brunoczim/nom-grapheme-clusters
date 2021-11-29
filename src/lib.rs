@@ -21,12 +21,16 @@
 //!     span: Span,
 //! }
 //!
-//! fn parse_smth(tags: &Tags) -> impl FnMut(Span) -> IResult<Span, ParsedAtn> {
-//!     map(tag(tags.smth.clone()), |span| ParsedAtn { span })
+//! fn parse_smth<'a>(
+//!     tags: &'a Tags
+//! ) -> impl FnMut(Span) -> IResult<Span, ParsedAtn> + 'a {
+//!     map(tag(&tags.smth), |span| ParsedAtn { span })
 //! }
 //!
-//! fn parse_atn(tags: &Tags) -> impl FnMut(Span) -> IResult<Span, ParsedAtn> {
-//!     map(tag(tags.atn.clone()), |span| ParsedAtn { span })
+//! fn parse_atn<'a>(
+//!     tags: &'a Tags
+//! ) -> impl FnMut(Span) -> IResult<Span, ParsedAtn> + 'a {
+//!     map(tag(&tags.atn), |span| ParsedAtn { span })
 //! }
 //!
 //! # fn main() {
