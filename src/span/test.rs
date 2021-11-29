@@ -6,7 +6,6 @@ fn segments() {
     let source = Source::new("complicated.rs", "av́e\nmař̋ia\ns̋ic̄");
     let span = source.full_span();
     let sliced_span = span.slice(1 .. 8);
-    eprintln!("{:#?}", sliced_span);
     let mut iterator = sliced_span.segments();
 
     let segment = iterator.next().unwrap();

@@ -256,7 +256,7 @@ impl InputTake for Span {
     }
 
     fn take_split(&self, count: usize) -> (Self, Self) {
-        (self.slice(.. count), self.slice(count ..))
+        (self.slice(count ..), self.slice(.. count))
     }
 }
 
@@ -672,7 +672,7 @@ impl InputTake for SpanContent {
     }
 
     fn take_split(&self, count: usize) -> (Self, Self) {
-        (self.slice(.. count), self.slice(count ..))
+        (self.slice(count ..), self.slice(.. count))
     }
 }
 

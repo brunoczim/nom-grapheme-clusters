@@ -3,23 +3,35 @@
 //! # Examples
 //! ```
 //! use nom_grapheme_clusters::{Source, Span, SpanContent};
-//! use nom::{IResult, bytes::complete::tag, combinator::value};
+//! use nom::{IResult, bytes::complete::tag, combinator::map};
 //!
 //! #[derive(Debug, Clone, PartialEq, Eq)]
-//! struct ParsedAtn;
+//! struct ParsedAtn {
+//!     span: Span,
+//! }
 //!
 //! fn parse_atn(input: Span) -> IResult<Span, ParsedAtn> {
-//!     value(ParsedAtn, tag(Span::adhoc("atn̩̊")))(input)
+//!     map(tag(Span::adhoc("atn̩̊")), |span| ParsedAtn { span })(input)
 //! }
 //!
 //! # fn main() {
-//! let source = Source::new("file.txt", "atn̩̊");
+//! let source = Source::new("file.txt", "atn̩̊a");
 //! let span = source.full_span();
-//! assert_eq!(parse_atn(span).unwrap().1, ParsedAtn);
+//! let (_, parsed) = parse_atn(span).unwrap();
+//! assert_eq!(parsed.span.as_str(), "atn̩̊");
+//! assert_eq!(parsed.span.start().position(), 0);
+//! assert_eq!(parsed.span.start().line(), 0);
+//! assert_eq!(parsed.span.start().column(), 0);
+//! assert_eq!(parsed.span.len(), 3);
+//! assert_eq!(parsed.span.end().position(), 3);
+//! assert_eq!(parsed.span.end().line(), 0);
+//! assert_eq!(parsed.span.end().column(), 3);
 //!
-//! let source = Source::new("file.txt", "atn");
+//! let source = Source::new("file2.txt", "atn");
 //! let span = source.full_span();
-//! assert!(parse_atn(span).is_err());
+//! let result = parse_atn(span);
+//! assert!(result.is_err());
+//! println!("{}", result.unwrap_err());
 //! # }
 //! ```
 
