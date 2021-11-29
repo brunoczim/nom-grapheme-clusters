@@ -123,8 +123,8 @@
 <span class="doccomment">//! };</span>
 <span class="doccomment">//! let source = Source::new(&quot;file.txt&quot;, &quot;atn̩̊smtha&quot;);</span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//! let span = source.full_span();</span>
-<span class="doccomment">//! let (span, parsed) = parse_atn(&amp;tags)(span).unwrap();</span>
+<span class="doccomment">//! let span0 = source.full_span();</span>
+<span class="doccomment">//! let (span1, parsed) = parse_atn(&amp;tags)(span0).unwrap();</span>
 <span class="doccomment">//! assert_eq!(parsed.span.as_str(), &quot;atn̩̊&quot;);</span>
 <span class="doccomment">//! assert_eq!(parsed.span.start().position(), 0);</span>
 <span class="doccomment">//! assert_eq!(parsed.span.start().line(), 0);</span>
@@ -134,7 +134,7 @@
 <span class="doccomment">//! assert_eq!(parsed.span.end().line(), 0);</span>
 <span class="doccomment">//! assert_eq!(parsed.span.end().column(), 3);</span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//! let (span, parsed) = parse_smth(&amp;tags)(span).unwrap();</span>
+<span class="doccomment">//! let (span2, parsed) = parse_smth(&amp;tags)(span1).unwrap();</span>
 <span class="doccomment">//! assert_eq!(parsed.span.as_str(), &quot;smth&quot;);</span>
 <span class="doccomment">//! assert_eq!(parsed.span.start().position(), 3);</span>
 <span class="doccomment">//! assert_eq!(parsed.span.start().line(), 0);</span>
@@ -144,7 +144,7 @@
 <span class="doccomment">//! assert_eq!(parsed.span.end().line(), 0);</span>
 <span class="doccomment">//! assert_eq!(parsed.span.end().column(), 7);</span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//! let result = parse_atn(&amp;tags)(span);</span>
+<span class="doccomment">//! let result = parse_atn(&amp;tags)(span2);</span>
 <span class="doccomment">//! assert!(result.is_err());</span>
 <span class="doccomment">//! println!(&quot;{}&quot;, result.unwrap_err());</span>
 <span class="doccomment">//! # }</span>
