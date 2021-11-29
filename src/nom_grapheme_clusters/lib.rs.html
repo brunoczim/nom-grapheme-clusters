@@ -75,6 +75,10 @@
 <span id="75">75</span>
 <span id="76">76</span>
 <span id="77">77</span>
+<span id="78">78</span>
+<span id="79">79</span>
+<span id="80">80</span>
+<span id="81">81</span>
 </pre><pre class="rust"><code><span class="doccomment">//! This crate provides location for `nom` with support to grapheme clusters.</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! # Examples</span>
@@ -98,12 +102,16 @@
 <span class="doccomment">//!     span: Span,</span>
 <span class="doccomment">//! }</span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//! fn parse_smth(tags: &amp;Tags) -&gt; impl FnMut(Span) -&gt; IResult&lt;Span, ParsedAtn&gt; {</span>
-<span class="doccomment">//!     map(tag(tags.smth.clone()), |span| ParsedAtn { span })</span>
+<span class="doccomment">//! fn parse_smth&lt;&#39;a&gt;(</span>
+<span class="doccomment">//!     tags: &amp;&#39;a Tags</span>
+<span class="doccomment">//! ) -&gt; impl FnMut(Span) -&gt; IResult&lt;Span, ParsedAtn&gt; + &#39;a {</span>
+<span class="doccomment">//!     map(tag(&amp;tags.smth), |span| ParsedAtn { span })</span>
 <span class="doccomment">//! }</span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//! fn parse_atn(tags: &amp;Tags) -&gt; impl FnMut(Span) -&gt; IResult&lt;Span, ParsedAtn&gt; {</span>
-<span class="doccomment">//!     map(tag(tags.atn.clone()), |span| ParsedAtn { span })</span>
+<span class="doccomment">//! fn parse_atn&lt;&#39;a&gt;(</span>
+<span class="doccomment">//!     tags: &amp;&#39;a Tags</span>
+<span class="doccomment">//! ) -&gt; impl FnMut(Span) -&gt; IResult&lt;Span, ParsedAtn&gt; + &#39;a {</span>
+<span class="doccomment">//!     map(tag(&amp;tags.atn), |span| ParsedAtn { span })</span>
 <span class="doccomment">//! }</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! # fn main() {</span>
