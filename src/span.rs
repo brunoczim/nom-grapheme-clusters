@@ -9,6 +9,7 @@ use crate::{
 };
 use nom::{
     error::ParseError,
+    Compare,
     InputIter,
     InputLength,
     InputTake,
@@ -23,6 +24,7 @@ use std::{
     hash::{Hash, Hasher},
     ops::{Bound, Deref, RangeBounds},
 };
+use unicode_segmentation::UnicodeSegmentation;
 
 /// A span (a range) in the source code.
 ///
@@ -331,6 +333,115 @@ impl Offset for Span {
     }
 }
 
+impl<'input> Compare<&'input Span> for Span {
+    fn compare(&self, input: &'input Span) -> nom::CompareResult {
+        let mut this_segments = self.segments();
+        let mut input_segments = input.segments();
+
+        loop {
+            match (this_segments.next(), input_segments.next()) {
+                (Some(this_segment), Some(input_segment)) => {
+                    if this_segment.as_str() != input_segment.as_str() {
+                        break nom::CompareResult::Error;
+                    }
+                },
+                (None, Some(_)) => break nom::CompareResult::Incomplete,
+                (_, None) => break nom::CompareResult::Ok,
+            }
+        }
+    }
+
+    fn compare_no_case(&self, input: &'input Span) -> nom::CompareResult {
+        let mut this_segments = self.segments();
+        let mut input_segments = input.segments();
+
+        loop {
+            match (this_segments.next(), input_segments.next()) {
+                (Some(this_segment), Some(input_segment)) => {
+                    if this_segment.as_str().to_lowercase()
+                        != input_segment.as_str().to_lowercase()
+                    {
+                        break nom::CompareResult::Error;
+                    }
+                },
+                (None, Some(_)) => break nom::CompareResult::Incomplete,
+                (_, None) => break nom::CompareResult::Ok,
+            }
+        }
+    }
+}
+
+impl Compare<Span> for Span {
+    fn compare(&self, input: Span) -> nom::CompareResult {
+        self.compare(&input)
+    }
+
+    fn compare_no_case(&self, input: Span) -> nom::CompareResult {
+        self.compare_no_case(&input)
+    }
+}
+
+impl<'input> Compare<&'input SpanContent> for Span {
+    fn compare(&self, input: &'input SpanContent) -> nom::CompareResult {
+        self.compare(input.span())
+    }
+
+    fn compare_no_case(
+        &self,
+        input: &'input SpanContent,
+    ) -> nom::CompareResult {
+        self.compare_no_case(input.span())
+    }
+}
+
+impl Compare<SpanContent> for Span {
+    fn compare(&self, input: SpanContent) -> nom::CompareResult {
+        self.compare(input.span())
+    }
+
+    fn compare_no_case(&self, input: SpanContent) -> nom::CompareResult {
+        self.compare_no_case(input.span())
+    }
+}
+
+impl<'input> Compare<&'input str> for Span {
+    fn compare(&self, input: &'input str) -> nom::CompareResult {
+        let mut loc_segments = self.segments();
+        let mut input_segments = input.graphemes(true);
+
+        loop {
+            match (loc_segments.next(), input_segments.next()) {
+                (Some(loc_segment), Some(input_segment)) => {
+                    if loc_segment.as_str() != input_segment {
+                        break nom::CompareResult::Error;
+                    }
+                },
+                (None, Some(_)) => break nom::CompareResult::Incomplete,
+                (_, None) => break nom::CompareResult::Ok,
+            }
+        }
+    }
+
+    fn compare_no_case(&self, input: &'input str) -> nom::CompareResult {
+        let mut loc_segments = self.segments();
+        let mut input_segments = input.graphemes(true);
+
+        loop {
+            match (loc_segments.next(), input_segments.next()) {
+                (Some(loc_segment), Some(input_segment)) => {
+                    if loc_segment.as_str().to_lowercase()
+                        != input_segment.to_lowercase()
+                    {
+                        break nom::CompareResult::Error;
+                    }
+                },
+                (None, Some(_)) => break nom::CompareResult::Incomplete,
+                (_, None) => break nom::CompareResult::Ok,
+            }
+        }
+    }
+}
+
 /// Iterator over located segments of a [`Span`]. Created by [`Span::segments`]
 /// or [`SpanContent::segments`], as well via [`IntoIterator`] trait.
 /// Double-ended and sized.
@@ -443,6 +554,15 @@ impl SpanContent {
     pub fn indexed_segments(&self) -> IndexedSegments {
         self.segments().indexed()
     }
+
+    /// Slices the span content to the given range. Returns `None` if the range
+    /// is invalid.
+    pub fn try_slice<R>(&self, range: R) -> Option<Self>
+    where
+        R: RangeBounds<usize>,
+    {
+        self.span.try_slice(range).map(|span| SpanContent { span })
+    }
 }
 
 impl Deref for SpanContent {
@@ -534,5 +654,188 @@ impl IntoIterator for SpanContent {
 
     fn into_iter(self) -> Self::IntoIter {
         Segments { span: self.span }
+    }
+}
+
+impl InputLength for SpanContent {
+    fn input_len(&self) -> usize {
+        self.len()
+    }
+}
+
+impl<R> Slice<R> for SpanContent
+where
+    R: RangeBounds<usize>,
+{
+    fn slice(&self, range: R) -> Self {
+        Self { span: self.span.slice(range) }
+    }
+}
+
+impl InputIter for SpanContent {
+    type Item = LocatedSegment;
+    type Iter = IndexedSegments;
+    type IterElem = Segments;
+
+    fn iter_indices(&self) -> Self::Iter {
+        self.indexed_segments()
+    }
+
+    fn iter_elements(&self) -> Self::IterElem {
+        self.segments()
+    }
+
+    fn position<P>(&self, predicate: P) -> Option<usize>
+    where
+        P: Fn(Self::Item) -> bool,
+    {
+        self.segments().position(predicate)
+    }
+
+    fn slice_index(&self, count: usize) -> Result<usize, nom::Needed> {
+        self.span.slice_index(count)
+    }
+}
+
+impl InputTake for SpanContent {
+    fn take(&self, count: usize) -> Self {
+        self.slice(count ..)
+    }
+
+    fn take_split(&self, count: usize) -> (Self, Self) {
+        (self.slice(.. count), self.slice(count ..))
+    }
+}
+
+impl InputTakeAtPosition for SpanContent {
+    type Item = LocatedSegment;
+
+    fn split_at_position<P, E>(
+        &self,
+        predicate: P,
+    ) -> nom::IResult<Self, Self, E>
+    where
+        P: Fn(Self::Item) -> bool,
+        E: ParseError<Self>,
+    {
+        match self.position(predicate) {
+            Some(pos) => Ok(self.take_split(pos)),
+            None => Err(nom::Err::Incomplete(nom::Needed::new(1))),
+        }
+    }
+
+    fn split_at_position1<P, E>(
+        &self,
+        predicate: P,
+        e: nom::error::ErrorKind,
+    ) -> nom::IResult<Self, Self, E>
+    where
+        P: Fn(Self::Item) -> bool,
+        E: ParseError<Self>,
+    {
+        match self.position(predicate) {
+            Some(0) => {
+                Err(nom::Err::Error(E::from_error_kind(self.clone(), e)))
+            },
+            Some(pos) => Ok(self.take_split(pos)),
+            None => Err(nom::Err::Incomplete(nom::Needed::new(1))),
+        }
+    }
+
+    fn split_at_position_complete<P, E>(
+        &self,
+        predicate: P,
+    ) -> nom::IResult<Self, Self, E>
+    where
+        P: Fn(Self::Item) -> bool,
+        E: ParseError<Self>,
+    {
+        match self.position(predicate) {
+            Some(pos) => Ok(self.take_split(pos)),
+            None => Ok(self.take_split(self.len())),
+        }
+    }
+
+    fn split_at_position1_complete<P, E>(
+        &self,
+        predicate: P,
+        e: nom::error::ErrorKind,
+    ) -> nom::IResult<Self, Self, E>
+    where
+        P: Fn(Self::Item) -> bool,
+        E: ParseError<Self>,
+    {
+        match self.position(predicate) {
+            Some(0) => {
+                Err(nom::Err::Error(E::from_error_kind(self.clone(), e)))
+            },
+            Some(pos) => Ok(self.take_split(pos)),
+            None => {
+                if self.len() > 0 {
+                    Ok(self.take_split(self.len()))
+                } else {
+                    Err(nom::Err::Error(E::from_error_kind(self.clone(), e)))
+                }
+            },
+        }
+    }
+}
+
+impl Offset for SpanContent {
+    fn offset(&self, second: &Self) -> usize {
+        self.span.offset(&second.span)
+    }
+}
+
+impl<'input> Compare<&'input Span> for SpanContent {
+    fn compare(&self, input: &'input Span) -> nom::CompareResult {
+        self.span.compare(input)
+    }
+
+    fn compare_no_case(&self, input: &'input Span) -> nom::CompareResult {
+        self.span.compare_no_case(input)
+    }
+}
+
+impl Compare<Span> for SpanContent {
+    fn compare(&self, input: Span) -> nom::CompareResult {
+        self.compare(&input)
+    }
+
+    fn compare_no_case(&self, input: Span) -> nom::CompareResult {
+        self.compare_no_case(&input)
+    }
+}
+
+impl<'input> Compare<&'input SpanContent> for SpanContent {
+    fn compare(&self, input: &'input SpanContent) -> nom::CompareResult {
+        self.compare(input.span())
+    }
+
+    fn compare_no_case(
+        &self,
+        input: &'input SpanContent,
+    ) -> nom::CompareResult {
+        self.compare_no_case(input.span())
+    }
+}
+
+impl Compare<SpanContent> for SpanContent {
+    fn compare(&self, input: SpanContent) -> nom::CompareResult {
+        self.compare(input.span())
+    }
+
+    fn compare_no_case(&self, input: SpanContent) -> nom::CompareResult {
+        self.compare_no_case(input.span())
+    }
+}
+
+impl<'input> Compare<&'input str> for SpanContent {
+    fn compare(&self, input: &'input str) -> nom::CompareResult {
+        self.span.compare(input)
+    }
+
+    fn compare_no_case(&self, input: &'input str) -> nom::CompareResult {
+        self.span.compare_no_case(input)
     }
 }
