@@ -42,8 +42,8 @@
 //! };
 //! let source = Source::new("file.txt", "atn̩̊smtha");
 //!
-//! let span = source.full_span();
-//! let (span, parsed) = parse_atn(&tags)(span).unwrap();
+//! let span0 = source.full_span();
+//! let (span1, parsed) = parse_atn(&tags)(span0).unwrap();
 //! assert_eq!(parsed.span.as_str(), "atn̩̊");
 //! assert_eq!(parsed.span.start().position(), 0);
 //! assert_eq!(parsed.span.start().line(), 0);
@@ -53,7 +53,7 @@
 //! assert_eq!(parsed.span.end().line(), 0);
 //! assert_eq!(parsed.span.end().column(), 3);
 //!
-//! let (span, parsed) = parse_smth(&tags)(span).unwrap();
+//! let (span2, parsed) = parse_smth(&tags)(span1).unwrap();
 //! assert_eq!(parsed.span.as_str(), "smth");
 //! assert_eq!(parsed.span.start().position(), 3);
 //! assert_eq!(parsed.span.start().line(), 0);
@@ -63,7 +63,7 @@
 //! assert_eq!(parsed.span.end().line(), 0);
 //! assert_eq!(parsed.span.end().column(), 7);
 //!
-//! let result = parse_atn(&tags)(span);
+//! let result = parse_atn(&tags)(span2);
 //! assert!(result.is_err());
 //! println!("{}", result.unwrap_err());
 //! # }
