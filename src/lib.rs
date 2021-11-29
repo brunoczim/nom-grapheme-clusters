@@ -8,14 +8,18 @@
 //! #[derive(Debug, Clone, PartialEq, Eq)]
 //! struct ParsedAtn;
 //!
-//! fn parse_atn(input: SpanContent) -> IResult<SpanContent, ParsedAtn> {
-//!     value(ParsedAtn, tag(Span::adhoc("atn̩̊").content()))(input)
+//! fn parse_atn(input: Span) -> IResult<Span, ParsedAtn> {
+//!     value(ParsedAtn, tag(Span::adhoc("atn̩̊")))(input)
 //! }
 //!
 //! # fn main() {
 //! let source = Source::new("file.txt", "atn̩̊");
 //! let span = source.full_span();
-//! assert_eq!(parse_atn(span.content()).unwrap().1, ParsedAtn);
+//! assert_eq!(parse_atn(span).unwrap().1, ParsedAtn);
+//!
+//! let source = Source::new("file.txt", "atn");
+//! let span = source.full_span();
+//! assert!(parse_atn(span).is_err());
 //! # }
 //! ```
 
