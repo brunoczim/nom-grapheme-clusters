@@ -126,9 +126,18 @@ impl Span {
         }
     }
 
-    /// Creates an iterator over located grapheme cluster segments.
+    /// Creates an iterator over located grapheme cluster segments, namely
+    /// [`LocatedSegment`]s.
     pub fn segments(&self) -> Segments {
         self.clone().into_iter()
+    }
+
+    /// Creates an [`IndexedSegments`] iterator, which yields a tuple of
+    /// position and a [`LocatedSegment`] in that position. Note that this is
+    /// just for convenience with e.g. nom, [`LocatedSegment`] already contains
+    /// its position, and so [`Segments`] can be used.
+    pub fn indexed_segments(&self) -> IndexedSegments {
+        self.segments().indexed()
     }
 }
 
@@ -179,11 +188,23 @@ impl IntoIterator for Span {
     }
 }
 
-/// Iterator over segments of a [`Span`].
+/// Iterator over located segments of a [`Span`]. Created by [`Span::segments`]
+/// or [`SpanContent::segments`], as well via [`IntoIterator`] trait.
+/// Double-ended and sized.
 #[derive(Debug, Clone)]
 pub struct Segments {
     /// Span being iterated.
     span: Span,
+}
+
+impl Segments {
+    /// Converts this iterator into an [`IndexedSegments`] iterator, which
+    /// yields a tuple of position and a [`LocatedSegment`] in that
+    /// position. Note that this is just for convenience with e.g. nom,
+    /// [`LocatedSegment`] already contains its position.
+    pub fn indexed(self) -> IndexedSegments {
+        IndexedSegments { inner: self }
+    }
 }
 
 impl Iterator for Segments {
@@ -199,7 +220,54 @@ impl Iterator for Segments {
             None
         }
     }
+
+    fn size_hint(&self) -> (usize, Option<usize>) {
+        (self.span.length, Some(self.span.length))
+    }
 }
+
+impl DoubleEndedIterator for Segments {
+    fn next_back(&mut self) -> Option<Self::Item> {
+        if self.span.len() > 0 {
+            self.span.length -= 1;
+            let segment = self.span.end().segment();
+            Some(segment)
+        } else {
+            None
+        }
+    }
+}
+
+impl ExactSizeIterator for Segments {}
+
+/// Iterator over segments of a [`Span`] which also yield postion for
+/// convenience. Created by [`Segments::indexed`], [`Span::indexed_segments`] or
+/// [`SpanContent::indexed_segments`]. Double-ended and sized.
+#[derive(Debug, Clone)]
+pub struct IndexedSegments {
+    /// Inner iterator over segments.
+    inner: Segments,
+}
+
+impl Iterator for IndexedSegments {
+    type Item = (usize, LocatedSegment);
+
+    fn next(&mut self) -> Option<Self::Item> {
+        self.inner
+            .next()
+            .map(|segment| (segment.location().position(), segment))
+    }
+}
+
+impl DoubleEndedIterator for IndexedSegments {
+    fn next_back(&mut self) -> Option<Self::Item> {
+        self.inner
+            .next_back()
+            .map(|segment| (segment.location().position(), segment))
+    }
+}
+
+impl ExactSizeIterator for IndexedSegments {}
 
 /// A type that, when displayed, shows the span contents, rather than location.
 #[derive(Clone, Debug)]
@@ -217,6 +285,20 @@ impl SpanContent {
     /// Returns the span contents as a string.
     pub fn as_str(&self) -> &str {
         self.span.as_str()
+    }
+
+    /// Creates an iterator over located grapheme cluster segments, namely
+    /// [`LocatedSegment`]s.
+    pub fn segments(&self) -> Segments {
+        self.clone().into_iter()
+    }
+
+    /// Creates an [`IndexedSegments`] iterator, which yields a tuple of
+    /// position and a [`LocatedSegment`] in that position. Note that this is
+    /// just for convenience with e.g. nom, [`LocatedSegment`] already contains
+    /// its position, and so [`Segments`] can be used.
+    pub fn indexed_segments(&self) -> IndexedSegments {
+        self.segments().indexed()
     }
 }
 
