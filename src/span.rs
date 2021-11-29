@@ -60,8 +60,24 @@ impl Span {
         Self::new_unchecked(start, length)
     }
 
-    pub fn adhoc(contents: &str) -> Self {
-        Source::new("<adhoc>", contents).full_span()
+    /// Creates a new span from a range of locations, where `end` is exlusive.
+    ///
+    /// # Panics
+    /// Panics if `start` and `end` point to different sources, or if `start` is
+    /// past beyond `end`.
+    pub fn from_range(start: Location, end: Location) -> Self {
+        if start.source() != end.source() {
+            panic!(
+                "Start ({}) and end ({}) of span are of different sources",
+                start, end
+            )
+        }
+        if end.position() < start.position() {
+            panic!("Start ({}) of span is past beyond end ({})", start, end)
+        }
+
+        let length = end.position() - start.position();
+        Self::new_unchecked(start, length)
     }
 
     /// The start location of this span.
