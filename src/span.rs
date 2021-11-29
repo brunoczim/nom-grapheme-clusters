@@ -7,6 +7,15 @@ use crate::{
     location::{LocatedSegment, Location},
     source::Source,
 };
+use nom::{
+    error::ParseError,
+    InputIter,
+    InputLength,
+    InputTake,
+    InputTakeAtPosition,
+    Offset,
+    Slice,
+};
 use std::{
     borrow::Borrow,
     cmp::Ordering,
@@ -99,7 +108,7 @@ impl Span {
 
     /// Slices this span to the given range. Returns `None` if the range is
     /// invalid.
-    pub fn slice<R>(&self, range: R) -> Option<Self>
+    pub fn try_slice<R>(&self, range: R) -> Option<Self>
     where
         R: RangeBounds<usize>,
     {
@@ -185,6 +194,140 @@ impl IntoIterator for Span {
 
     fn into_iter(self) -> Self::IntoIter {
         Segments { span: self }
+    }
+}
+
+impl InputLength for Span {
+    fn input_len(&self) -> usize {
+        self.len()
+    }
+}
+
+impl<R> Slice<R> for Span
+where
+    R: RangeBounds<usize>,
+{
+    fn slice(&self, range: R) -> Self {
+        self.try_slice(range).expect("invalid span range")
+    }
+}
+
+impl InputIter for Span {
+    type Item = LocatedSegment;
+    type Iter = IndexedSegments;
+    type IterElem = Segments;
+
+    fn iter_indices(&self) -> Self::Iter {
+        self.indexed_segments()
+    }
+
+    fn iter_elements(&self) -> Self::IterElem {
+        self.segments()
+    }
+
+    fn position<P>(&self, predicate: P) -> Option<usize>
+    where
+        P: Fn(Self::Item) -> bool,
+    {
+        self.segments().position(predicate)
+    }
+
+    fn slice_index(&self, count: usize) -> Result<usize, nom::Needed> {
+        if self.len() >= count {
+            Ok(count)
+        } else {
+            Err(nom::Needed::new(count - self.len()))
+        }
+    }
+}
+
+impl InputTake for Span {
+    fn take(&self, count: usize) -> Self {
+        self.slice(count ..)
+    }
+
+    fn take_split(&self, count: usize) -> (Self, Self) {
+        (self.slice(.. count), self.slice(count ..))
+    }
+}
+
+impl InputTakeAtPosition for Span {
+    type Item = LocatedSegment;
+
+    fn split_at_position<P, E>(
+        &self,
+        predicate: P,
+    ) -> nom::IResult<Self, Self, E>
+    where
+        P: Fn(Self::Item) -> bool,
+        E: ParseError<Self>,
+    {
+        match self.position(predicate) {
+            Some(pos) => Ok(self.take_split(pos)),
+            None => Err(nom::Err::Incomplete(nom::Needed::new(1))),
+        }
+    }
+
+    fn split_at_position1<P, E>(
+        &self,
+        predicate: P,
+        e: nom::error::ErrorKind,
+    ) -> nom::IResult<Self, Self, E>
+    where
+        P: Fn(Self::Item) -> bool,
+        E: ParseError<Self>,
+    {
+        match self.position(predicate) {
+            Some(0) => {
+                Err(nom::Err::Error(E::from_error_kind(self.clone(), e)))
+            },
+            Some(pos) => Ok(self.take_split(pos)),
+            None => Err(nom::Err::Incomplete(nom::Needed::new(1))),
+        }
+    }
+
+    fn split_at_position_complete<P, E>(
+        &self,
+        predicate: P,
+    ) -> nom::IResult<Self, Self, E>
+    where
+        P: Fn(Self::Item) -> bool,
+        E: ParseError<Self>,
+    {
+        match self.position(predicate) {
+            Some(pos) => Ok(self.take_split(pos)),
+            None => Ok(self.take_split(self.len())),
+        }
+    }
+
+    fn split_at_position1_complete<P, E>(
+        &self,
+        predicate: P,
+        e: nom::error::ErrorKind,
+    ) -> nom::IResult<Self, Self, E>
+    where
+        P: Fn(Self::Item) -> bool,
+        E: ParseError<Self>,
+    {
+        match self.position(predicate) {
+            Some(0) => {
+                Err(nom::Err::Error(E::from_error_kind(self.clone(), e)))
+            },
+            Some(pos) => Ok(self.take_split(pos)),
+            None => {
+                if self.len() > 0 {
+                    Ok(self.take_split(self.len()))
+                } else {
+                    Err(nom::Err::Error(E::from_error_kind(self.clone(), e)))
+                }
+            },
+        }
+    }
+}
+
+impl Offset for Span {
+    fn offset(&self, second: &Self) -> usize {
+        second.start().position() - self.start().position()
     }
 }
 
