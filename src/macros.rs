@@ -49,20 +49,6 @@
 /// ```
 #[macro_export]
 macro_rules! tag_table {
-    ($(let $var:ident = $value:expr;)*) => {
-        tag_table! { name = "<tags>"; $(let $var = $value;)* }
-    };
-
-    ($name:ident { $($var:ident : $value:expr),* }) => {{
-        tag_table! { name = stringify!($name); $(let $var = $value;)* }
-        $name { $($var),* }
-    }};
-
-    ($name:ident { $($var:ident : $value:expr,)* }) => {{
-        tag_table! { name = stringify!($name); $(let $var = $value;)* }
-        $name { $($var),* }
-    }};
-
     (name = $name:expr; $(let $var:ident = $value:expr;)*) => {
         let ($($var),*) = {
             struct Entry {
@@ -92,4 +78,19 @@ macro_rules! tag_table {
             )*)
         };
     };
+
+    ($(let $var:ident = $value:expr;)*) => {
+        tag_table! { name = "<tags>"; $(let $var = $value;)* }
+    };
+
+    ($name:ident { $($var:ident : $value:expr),* }) => {{
+        tag_table! { name = stringify!($name); $(let $var = $value;)* }
+        $name { $($var),* }
+    }};
+
+    ($name:ident { $($var:ident : $value:expr,)* }) => {{
+        tag_table! { name = stringify!($name); $(let $var = $value;)* }
+        $name { $($var),* }
+    }};
+
 }
