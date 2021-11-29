@@ -4,7 +4,7 @@
 ///
 /// # Examples
 ///
-/// ## Binding
+/// ## Binding to Variables
 ///
 /// ```
 /// use nom_grapheme_clusters::tag_table;
@@ -23,7 +23,7 @@
 /// # }
 /// ```
 ///
-/// ## Struct
+/// ## Binding to a Struct
 ///
 /// ```
 /// use nom_grapheme_clusters::{Span, tag_table};
