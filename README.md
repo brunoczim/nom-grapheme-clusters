@@ -18,7 +18,7 @@ such that:
 
 # Main-branch Docs
 
-https://brunoczim.github.io/nom-grapheme-clusters/nom_grapheme_clusters/index.html
+https://brunoczim.github.io/nom-grapheme-clusters/nom_grapheme_clusters/
 
 # Example
 ```rust
