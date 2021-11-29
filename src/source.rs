@@ -17,6 +17,11 @@ use std::{
 };
 use unicode_segmentation::UnicodeSegmentation;
 
+#[doc(hidden)]
+pub fn count_grapheme_clusters(input: &str) -> usize {
+    input.graphemes(true).count()
+}
+
 /// Inner structure of a source.
 #[derive(Debug)]
 struct SourceInner {
