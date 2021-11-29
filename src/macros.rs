@@ -126,17 +126,17 @@ macro_rules! tag_table {
         $struct_name { $($var),* }
     }};
 
-    ($struct_name:ident { $($var:ident : $value:expr),* }) => {{
+    ($struct_name:ident { $($var:ident : $value:expr),* }) => {
         tag_table! {
             name = stringify!($struct_name);
             $struct_name { $($var : $value),* }
         }
-    }};
+    };
 
-    ($struct_name:ident { $($var:ident : $value:expr,)* }) => {{
+    ($struct_name:ident { $($var:ident : $value:expr,)* }) => {
         tag_table! {
             name = stringify!($struct_name);
             $struct_name { $($var : $value),* }
         }
-    }};
+    };
 }
