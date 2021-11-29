@@ -12,8 +12,9 @@ such that:
 2. Grapheme clusters location at the input string (i.e. the "source code") are
     tracked by their absolute position, line and column. All of the three data
     are counted in terms of grapheme clusters as well. For instance, in the
-    string `"m̤̊ef"`, the grapheme cluster "e" is at position `1`, line `0` and
-    column `1` (all of them begin at `0`), because "m̤̊" counts as a single thing.
+    string `"m̤̊ef"`, the grapheme cluster `"e"` is at position `1`, line `0` and
+    column `1` (all of them begin at `0`), because `"m̤̊"` counts as a single
+    thing.
 
 # Main-branch Docs
 
