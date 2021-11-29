@@ -79,7 +79,7 @@
 #[macro_export]
 macro_rules! tag_table {
     (name = $name:expr; $(let $var:ident = $value:expr;)*) => {
-        let ($($var),*) = {
+        let ($($var,)*) = {
             struct Entry {
                 start: usize,
                 length: usize,
