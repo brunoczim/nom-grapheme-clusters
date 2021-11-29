@@ -26,6 +26,10 @@
 <span id="26">26</span>
 <span id="27">27</span>
 <span id="28">28</span>
+<span id="29">29</span>
+<span id="30">30</span>
+<span id="31">31</span>
+<span id="32">32</span>
 </pre><pre class="rust"><code><span class="doccomment">//! This crate provides location for `nom` with support to grapheme clusters.</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! # Examples</span>
@@ -36,14 +40,18 @@
 <span class="doccomment">//! #[derive(Debug, Clone, PartialEq, Eq)]</span>
 <span class="doccomment">//! struct ParsedAtn;</span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//! fn parse_atn(input: SpanContent) -&gt; IResult&lt;SpanContent, ParsedAtn&gt; {</span>
-<span class="doccomment">//!     value(ParsedAtn, tag(Span::adhoc(&quot;atn̩̊&quot;).content()))(input)</span>
+<span class="doccomment">//! fn parse_atn(input: Span) -&gt; IResult&lt;Span, ParsedAtn&gt; {</span>
+<span class="doccomment">//!     value(ParsedAtn, tag(Span::adhoc(&quot;atn̩̊&quot;)))(input)</span>
 <span class="doccomment">//! }</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! # fn main() {</span>
 <span class="doccomment">//! let source = Source::new(&quot;file.txt&quot;, &quot;atn̩̊&quot;);</span>
 <span class="doccomment">//! let span = source.full_span();</span>
-<span class="doccomment">//! assert_eq!(parse_atn(span.content()).unwrap().1, ParsedAtn);</span>
+<span class="doccomment">//! assert_eq!(parse_atn(span).unwrap().1, ParsedAtn);</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! let source = Source::new(&quot;file.txt&quot;, &quot;atn&quot;);</span>
+<span class="doccomment">//! let span = source.full_span();</span>
+<span class="doccomment">//! assert!(parse_atn(span).is_err());</span>
 <span class="doccomment">//! # }</span>
 <span class="doccomment">//! ```</span>
 
