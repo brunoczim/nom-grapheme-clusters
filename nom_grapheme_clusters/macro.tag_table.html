@@ -5,7 +5,7 @@
     (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">name</span> : <span class="ident">ident</span> { $(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">var</span> : <span class="ident">ident</span> : <span class="macro-nonterminal">$</span><span class="macro-nonterminal">value</span> : <span class="ident">expr</span>,) <span class="op">*</span> }) <span class="op">=</span><span class="op">&gt;</span> { ... };
 }</code></pre></div>
 </div><details class="rustdoc-toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>Creates a table of tags to be used e.g. in a parser.</p>
-<h1 id="examples" class="section-header"><a href="#examples">Examples</a></h1><h2 id="binding" class="section-header"><a href="#binding">Binding</a></h2>
+<h1 id="examples" class="section-header"><a href="#examples">Examples</a></h1><h2 id="binding-to-variables" class="section-header"><a href="#binding-to-variables">Binding to Variables</a></h2>
 <div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use</span> <span class="ident">nom_grapheme_clusters::tag_table</span>;
 
 <span class="macro">tag_table!</span> {
@@ -18,7 +18,7 @@
 <span class="macro">assert_eq!</span>(<span class="ident">foo</span>.<span class="ident">start</span>().<span class="ident">position</span>(), <span class="number">0</span>);
 <span class="macro">assert_eq!</span>(<span class="ident">bar</span>.<span class="ident">as_str</span>(), <span class="string">&quot;Bar&quot;</span>);
 <span class="macro">assert_eq!</span>(<span class="ident">bar</span>.<span class="ident">start</span>().<span class="ident">position</span>(), <span class="number">3</span>);</code></pre></div>
-<h2 id="struct" class="section-header"><a href="#struct">Struct</a></h2>
+<h2 id="binding-to-a-struct" class="section-header"><a href="#binding-to-a-struct">Binding to a Struct</a></h2>
 <div class="example-wrap"><pre class="rust rust-example-rendered"><code><span class="kw">use</span> <span class="ident">nom_grapheme_clusters</span>::{<span class="ident">Span</span>, <span class="ident">tag_table</span>};
 
 <span class="kw">struct</span> <span class="ident">MyTags</span> {
