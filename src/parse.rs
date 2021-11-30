@@ -6,7 +6,6 @@ use crate::LocatedSegment;
 use nom::{
     error::{ErrorKind, ParseError},
     FindToken,
-    Parser,
 };
 pub use tag::Tag;
 
@@ -302,10 +301,15 @@ where
 pub fn line_ending<T, E>(input: T) -> nom::IResult<T, T, E>
 where
     for<'slice, 'seg> T: nom::InputTake + nom::Compare<Tag<'slice, 'seg>>,
-    T: Clone,
     E: ParseError<T>,
 {
-    Parser::<T, T, E>::or(Tag(&["\r", "\n"]), Tag(&["\n"])).parse(input)
+    match input.compare(Tag(&["\n"])) {
+        nom::CompareResult::Ok => Ok(input.take_split(1)),
+        nom::CompareResult::Error => crlf(input),
+        nom::CompareResult::Incomplete => {
+            Err(nom::Err::Error(E::from_error_kind(input, ErrorKind::CrLf)))
+        },
+    }
 }
 
 /// Recognizes the given grapheme cluster/segment.
