@@ -553,10 +553,6 @@
 <span id="553">553</span>
 <span id="554">554</span>
 <span id="555">555</span>
-<span id="556">556</span>
-<span id="557">557</span>
-<span id="558">558</span>
-<span id="559">559</span>
 </pre><pre class="rust"><code><span class="doccomment">//! This module defines a tag type for segments. It also implements nom traits</span>
 <span class="doccomment">//! in order to be used with [`Span`] and [`SpanContent`].</span>
 
@@ -577,11 +573,7 @@
     <span class="ident">Parser</span>,
     <span class="ident">Slice</span>,
 };
-<span class="kw">use</span> <span class="ident">std</span>::{
-    <span class="ident">iter</span>::{<span class="ident">Enumerate</span>},
-    <span class="ident">ops::RangeBounds</span>,
-    <span class="ident">slice</span>,
-};
+<span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">iter::Enumerate</span>, <span class="ident">ops::RangeBounds</span>, <span class="ident">slice</span>};
 
 <span class="doccomment">/// A type usable as tag for a parser without having to create a proper</span>
 <span class="doccomment">/// [`Span`].</span>
