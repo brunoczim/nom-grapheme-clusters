@@ -417,6 +417,10 @@
 <span id="417">417</span>
 <span id="418">418</span>
 <span id="419">419</span>
+<span id="420">420</span>
+<span id="421">421</span>
+<span id="422">422</span>
+<span id="423">423</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Exports parse functions related to segments/grapheme clusters.</span>
 
 <span class="kw">mod</span> <span class="ident">tag</span>;
@@ -425,7 +429,6 @@
 <span class="kw">use</span> <span class="ident">nom</span>::{
     <span class="ident">error</span>::{<span class="ident">ErrorKind</span>, <span class="ident">ParseError</span>},
     <span class="ident">FindToken</span>,
-    <span class="ident">Parser</span>,
 };
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">tag::Tag</span>;
 
@@ -721,10 +724,15 @@
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">line_ending</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">E</span><span class="op">&gt;</span>(<span class="ident">input</span>: <span class="ident">T</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">nom::IResult</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">T</span>, <span class="ident">E</span><span class="op">&gt;</span>
 <span class="kw">where</span>
     <span class="kw">for</span><span class="op">&lt;</span><span class="lifetime">&#39;slice</span>, <span class="lifetime">&#39;seg</span><span class="op">&gt;</span> <span class="ident">T</span>: <span class="ident">nom::InputTake</span> <span class="op">+</span> <span class="ident">nom::Compare</span><span class="op">&lt;</span><span class="ident">Tag</span><span class="op">&lt;</span><span class="lifetime">&#39;slice</span>, <span class="lifetime">&#39;seg</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-    <span class="ident">T</span>: <span class="ident">Clone</span>,
     <span class="ident">E</span>: <span class="ident">ParseError</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
 {
-    <span class="ident">Parser</span>::<span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">T</span>, <span class="ident">E</span><span class="op">&gt;</span><span class="ident">::or</span>(<span class="ident">Tag</span>(<span class="kw-2">&amp;</span>[<span class="string">&quot;\r&quot;</span>, <span class="string">&quot;\n&quot;</span>]), <span class="ident">Tag</span>(<span class="kw-2">&amp;</span>[<span class="string">&quot;\n&quot;</span>])).<span class="ident">parse</span>(<span class="ident">input</span>)
+    <span class="kw">match</span> <span class="ident">input</span>.<span class="ident">compare</span>(<span class="ident">Tag</span>(<span class="kw-2">&amp;</span>[<span class="string">&quot;\n&quot;</span>])) {
+        <span class="ident">nom::CompareResult::Ok</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">input</span>.<span class="ident">take_split</span>(<span class="number">1</span>)),
+        <span class="ident">nom::CompareResult::Error</span> <span class="op">=</span><span class="op">&gt;</span> <span class="ident">crlf</span>(<span class="ident">input</span>),
+        <span class="ident">nom::CompareResult::Incomplete</span> <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="prelude-val">Err</span>(<span class="ident">nom::Err::Error</span>(<span class="ident">E::from_error_kind</span>(<span class="ident">input</span>, <span class="ident">ErrorKind::CrLf</span>)))
+        },
+    }
 }
 
 <span class="doccomment">/// Recognizes the given grapheme cluster/segment.</span>
