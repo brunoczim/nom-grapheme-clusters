@@ -80,8 +80,6 @@
 <span id="80">80</span>
 <span id="81">81</span>
 <span id="82">82</span>
-<span id="83">83</span>
-<span id="84">84</span>
 </pre><pre class="rust"><code><span class="doccomment">//! This crate provides location for `nom` with support to grapheme clusters.</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! # Examples</span>
@@ -159,13 +157,11 @@
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">source</span>;
 <span class="kw">mod</span> <span class="ident">location</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">span</span>;
-<span class="kw">mod</span> <span class="ident">tag</span>;
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">parse</span>;
 
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">location</span>::{<span class="ident">LocatedSegment</span>, <span class="ident">Location</span>};
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">source::Source</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">span</span>::{<span class="ident">Span</span>, <span class="ident">SpanContent</span>};
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">tag::Tag</span>;
 </code></pre></div>
 </section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="nom_grapheme_clusters" data-search-index-js="../../search-index.js" data-search-js="../../search.js"></div>
     <script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script>

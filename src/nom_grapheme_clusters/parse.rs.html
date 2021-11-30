@@ -317,8 +317,14 @@
 <span id="317">317</span>
 <span id="318">318</span>
 <span id="319">319</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">LocatedSegment</span>, <span class="ident">Tag</span>};
+<span id="320">320</span>
+<span id="321">321</span>
+<span id="322">322</span>
+</pre><pre class="rust"><code><span class="kw">mod</span> <span class="ident">tag</span>;
+
+<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::LocatedSegment</span>;
 <span class="kw">use</span> <span class="ident">nom::error</span>::{<span class="ident">ErrorKind</span>, <span class="ident">ParseError</span>};
+<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">tag::Tag</span>;
 
 <span class="doccomment">/// Recognizes zero or more UTF-8 alphabetic segments, possibly with diacritics.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">alpha0</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">E</span><span class="op">&gt;</span>(<span class="ident">input</span>: <span class="ident">T</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">nom::IResult</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">T</span>, <span class="ident">E</span><span class="op">&gt;</span>
