@@ -474,6 +474,7 @@
 <span id="474">474</span>
 <span id="475">475</span>
 <span id="476">476</span>
+<span id="477">477</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::span</span>::{<span class="ident">Span</span>, <span class="ident">SpanContent</span>};
 <span class="kw">use</span> <span class="ident">nom</span>::{
     <span class="ident">bytes::complete::tag</span>,
@@ -502,7 +503,8 @@
 );
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;slice</span>, <span class="lifetime">&#39;seg</span><span class="op">&gt;</span> <span class="ident">Tag</span><span class="op">&lt;</span><span class="lifetime">&#39;slice</span>, <span class="lifetime">&#39;seg</span><span class="op">&gt;</span> {
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">parser</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">E</span><span class="op">&gt;</span>(
+    <span class="doccomment">/// Converts this tag parsed into a function (also a parser).</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">into_fn</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">E</span><span class="op">&gt;</span>(
         <span class="self">self</span>,
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="kw">impl</span> <span class="ident">FnMut</span>(<span class="ident">T</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">nom::IResult</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">T</span>, <span class="ident">E</span><span class="op">&gt;</span> <span class="op">+</span> <span class="lifetime">&#39;slice</span> <span class="op">+</span> <span class="lifetime">&#39;seg</span>
     <span class="kw">where</span>

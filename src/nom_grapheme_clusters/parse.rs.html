@@ -310,6 +310,13 @@
 <span id="310">310</span>
 <span id="311">311</span>
 <span id="312">312</span>
+<span id="313">313</span>
+<span id="314">314</span>
+<span id="315">315</span>
+<span id="316">316</span>
+<span id="317">317</span>
+<span id="318">318</span>
+<span id="319">319</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">LocatedSegment</span>, <span class="ident">Tag</span>};
 <span class="kw">use</span> <span class="ident">nom::error</span>::{<span class="ident">ErrorKind</span>, <span class="ident">ParseError</span>};
 
@@ -557,6 +564,7 @@
     }
 }
 
+<span class="doccomment">/// Recognizes zero or more unicode whitespace graphemes.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">whitespace0</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">E</span><span class="op">&gt;</span>(<span class="ident">input</span>: <span class="ident">T</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">nom::IResult</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">T</span>, <span class="ident">E</span><span class="op">&gt;</span>
 <span class="kw">where</span>
     <span class="ident">T</span>: <span class="ident">nom::InputTakeAtPosition</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">LocatedSegment</span><span class="op">&gt;</span>,
@@ -565,6 +573,7 @@
     <span class="ident">input</span>.<span class="ident">split_at_position_complete</span>(<span class="op">|</span><span class="ident">item</span><span class="op">|</span> <span class="op">!</span><span class="ident">item</span>.<span class="ident">is_whitespace</span>())
 }
 
+<span class="doccomment">/// Recognizes one or more unicode whitespace graphemes.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">whitespace1</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">E</span><span class="op">&gt;</span>(<span class="ident">input</span>: <span class="ident">T</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">nom::IResult</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">T</span>, <span class="ident">E</span><span class="op">&gt;</span>
 <span class="kw">where</span>
     <span class="ident">T</span>: <span class="ident">nom::InputTakeAtPosition</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">LocatedSegment</span><span class="op">&gt;</span>,
@@ -576,6 +585,7 @@
     )
 }
 
+<span class="doccomment">/// Recognizes zero or more ASCII spaces.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">space0</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">E</span><span class="op">&gt;</span>(<span class="ident">input</span>: <span class="ident">T</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">nom::IResult</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">T</span>, <span class="ident">E</span><span class="op">&gt;</span>
 <span class="kw">where</span>
     <span class="ident">T</span>: <span class="ident">nom::InputTakeAtPosition</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">LocatedSegment</span><span class="op">&gt;</span>,
@@ -584,6 +594,7 @@
     <span class="ident">input</span>.<span class="ident">split_at_position_complete</span>(<span class="op">|</span><span class="ident">item</span><span class="op">|</span> <span class="op">!</span><span class="ident">item</span>.<span class="ident">is_space</span>())
 }
 
+<span class="doccomment">/// Recognizes one or more ASCII spaces.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">space1</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">E</span><span class="op">&gt;</span>(<span class="ident">input</span>: <span class="ident">T</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">nom::IResult</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">T</span>, <span class="ident">E</span><span class="op">&gt;</span>
 <span class="kw">where</span>
     <span class="ident">T</span>: <span class="ident">nom::InputTakeAtPosition</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">LocatedSegment</span><span class="op">&gt;</span>,
@@ -592,6 +603,7 @@
     <span class="ident">input</span>.<span class="ident">split_at_position1_complete</span>(<span class="op">|</span><span class="ident">item</span><span class="op">|</span> <span class="op">!</span><span class="ident">item</span>.<span class="ident">is_space</span>(), <span class="ident">ErrorKind::Space</span>)
 }
 
+<span class="doccomment">/// Recognizes zero or more linefeed (`&#39;\n&#39;`) ASCII characters.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">newline0</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">E</span><span class="op">&gt;</span>(<span class="ident">input</span>: <span class="ident">T</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">nom::IResult</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">T</span>, <span class="ident">E</span><span class="op">&gt;</span>
 <span class="kw">where</span>
     <span class="ident">T</span>: <span class="ident">nom::InputTakeAtPosition</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">LocatedSegment</span><span class="op">&gt;</span>,
@@ -600,6 +612,7 @@
     <span class="ident">input</span>.<span class="ident">split_at_position_complete</span>(<span class="op">|</span><span class="ident">item</span><span class="op">|</span> <span class="op">!</span><span class="ident">item</span>.<span class="ident">is_newline</span>())
 }
 
+<span class="doccomment">/// Recognizes one or more linefeed (`&#39;\n&#39;`) ASCII characters.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">newline1</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">E</span><span class="op">&gt;</span>(<span class="ident">input</span>: <span class="ident">T</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">nom::IResult</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">T</span>, <span class="ident">E</span><span class="op">&gt;</span>
 <span class="kw">where</span>
     <span class="ident">T</span>: <span class="ident">nom::InputTakeAtPosition</span><span class="op">&lt;</span><span class="ident">Item</span> <span class="op">=</span> <span class="ident">LocatedSegment</span><span class="op">&gt;</span>,
@@ -611,12 +624,13 @@
     )
 }
 
+<span class="doccomment">/// Recognizes the sequence `&#39;\r\n&#39;`.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">crlf</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">E</span><span class="op">&gt;</span>(<span class="ident">input</span>: <span class="ident">T</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">nom::IResult</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">T</span>, <span class="ident">E</span><span class="op">&gt;</span>
 <span class="kw">where</span>
     <span class="kw">for</span><span class="op">&lt;</span><span class="lifetime">&#39;slice</span>, <span class="lifetime">&#39;seg</span><span class="op">&gt;</span> <span class="ident">T</span>: <span class="ident">nom::InputTake</span> <span class="op">+</span> <span class="ident">nom::Compare</span><span class="op">&lt;</span><span class="ident">Tag</span><span class="op">&lt;</span><span class="lifetime">&#39;slice</span>, <span class="lifetime">&#39;seg</span><span class="op">&gt;</span><span class="op">&gt;</span>,
     <span class="ident">E</span>: <span class="ident">ParseError</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
 {
-    <span class="kw">match</span> <span class="ident">Tag</span>(<span class="kw-2">&amp;</span>[<span class="string">&quot;\r&quot;</span>, <span class="string">&quot;\n&quot;</span>]).<span class="ident">parser</span>::<span class="op">&lt;</span><span class="kw">_</span>, <span class="ident">nom::error::Error</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>()(<span class="ident">input</span>) {
+    <span class="kw">match</span> <span class="ident">Tag</span>(<span class="kw-2">&amp;</span>[<span class="string">&quot;\r&quot;</span>, <span class="string">&quot;\n&quot;</span>]).<span class="ident">into_fn</span>::<span class="op">&lt;</span><span class="kw">_</span>, <span class="ident">nom::error::Error</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>()(<span class="ident">input</span>) {
         <span class="prelude-val">Ok</span>(<span class="ident">data</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>(<span class="ident">data</span>),
         <span class="prelude-val">Err</span>(<span class="ident">nom_err</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">nom_err</span>
             .<span class="ident">map</span>(<span class="op">|</span><span class="ident">error</span><span class="op">|</span> <span class="ident">E::from_error_kind</span>(<span class="ident">error</span>.<span class="ident">input</span>, <span class="ident">ErrorKind::CrLf</span>))),
