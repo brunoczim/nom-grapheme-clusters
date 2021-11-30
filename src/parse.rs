@@ -1,3 +1,5 @@
+//! Exports parse functions related to segments/grapheme clusters.
+
 mod tag;
 
 use crate::LocatedSegment;
