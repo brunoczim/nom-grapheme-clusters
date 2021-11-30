@@ -3,7 +3,10 @@
 mod tag;
 
 use crate::LocatedSegment;
-use nom::error::{ErrorKind, ParseError};
+use nom::{
+    error::{ErrorKind, ParseError},
+    FindToken,
+};
 pub use tag::Tag;
 
 /// Recognizes zero or more UTF-8 alphabetic segments, possibly with diacritics.
@@ -232,24 +235,6 @@ where
     }
 }
 
-/// Recognizes any grapheme cluster/segment.
-pub fn any_segment<T, E>(input: T) -> nom::IResult<T, LocatedSegment, E>
-where
-    T: nom::InputIter<Item = LocatedSegment>
-        + nom::InputLength
-        + nom::InputTake,
-    E: ParseError<T>,
-{
-    let mut iterator = input.iter_indices();
-    match iterator.next() {
-        Some((_, segment)) => match iterator.next() {
-            Some((index, _)) => Ok((input.take(index), segment)),
-            None => Ok((input.take(input.input_len()), segment)),
-        },
-        None => Err(nom::Err::Error(E::from_error_kind(input, ErrorKind::Eof))),
-    }
-}
-
 /// Recognizes zero or more unicode whitespace graphemes.
 pub fn whitespace0<T, E>(input: T) -> nom::IResult<T, T, E>
 where
@@ -320,5 +305,115 @@ where
         Ok(data) => Ok(data),
         Err(nom_err) => Err(nom_err
             .map(|error| E::from_error_kind(error.input, ErrorKind::CrLf))),
+    }
+}
+
+/// Recognizes the given grapheme cluster/segment.
+pub fn segment<T, A, E>(
+    expected: A,
+) -> impl FnMut(T) -> nom::IResult<T, T::Item, E>
+where
+    T: nom::InputIter + nom::InputLength + nom::InputTake,
+    T::Item: PartialEq<A>,
+    E: ParseError<T>,
+{
+    move |input| {
+        let mut iterator = input.iter_indices();
+        match iterator.next() {
+            Some((_, segment)) => {
+                if segment == expected {
+                    match iterator.next() {
+                        Some((index, _)) => Ok((input.take(index), segment)),
+                        None => Ok((input.take(input.input_len()), segment)),
+                    }
+                } else {
+                    Err(nom::Err::Error(E::from_error_kind(
+                        input,
+                        ErrorKind::IsA,
+                    )))
+                }
+            },
+            None => {
+                Err(nom::Err::Error(E::from_error_kind(input, ErrorKind::Eof)))
+            },
+        }
+    }
+}
+
+/// Recognizes any grapheme cluster/segment.
+pub fn any_segment<T, E>(input: T) -> nom::IResult<T, LocatedSegment, E>
+where
+    T: nom::InputIter<Item = LocatedSegment>
+        + nom::InputLength
+        + nom::InputTake,
+    E: ParseError<T>,
+{
+    let mut iterator = input.iter_indices();
+    match iterator.next() {
+        Some((_, segment)) => match iterator.next() {
+            Some((index, _)) => Ok((input.take(index), segment)),
+            None => Ok((input.take(input.input_len()), segment)),
+        },
+        None => Err(nom::Err::Error(E::from_error_kind(input, ErrorKind::Eof))),
+    }
+}
+
+/// Recognizes any of the grapheme clusters/segments in the given list.
+pub fn any_of<T, L, E>(list: L) -> impl FnMut(T) -> nom::IResult<T, T::Item, E>
+where
+    T: nom::InputIter + nom::InputLength + nom::InputTake,
+    for<'tok> L: FindToken<&'tok T::Item>,
+    E: ParseError<T>,
+{
+    move |input| {
+        let mut iterator = input.iter_indices();
+        match iterator.next() {
+            Some((_, segment)) => {
+                if list.find_token(&segment) {
+                    match iterator.next() {
+                        Some((index, _)) => Ok((input.take(index), segment)),
+                        None => Ok((input.take(input.input_len()), segment)),
+                    }
+                } else {
+                    Err(nom::Err::Error(E::from_error_kind(
+                        input,
+                        ErrorKind::IsNot,
+                    )))
+                }
+            },
+            None => {
+                Err(nom::Err::Error(E::from_error_kind(input, ErrorKind::Eof)))
+            },
+        }
+    }
+}
+
+/// Recognizes a grapheme clusters/segments NOT in the given list.
+pub fn none_of<T, L, E>(list: L) -> impl FnMut(T) -> nom::IResult<T, T::Item, E>
+where
+    T: nom::InputIter + nom::InputLength + nom::InputTake,
+    for<'tok> L: FindToken<&'tok T::Item>,
+    E: ParseError<T>,
+{
+    move |input| {
+        let mut iterator = input.iter_indices();
+        match iterator.next() {
+            Some((_, segment)) => {
+                if !list.find_token(&segment) {
+                    match iterator.next() {
+                        Some((index, _)) => Ok((input.take(index), segment)),
+                        None => Ok((input.take(input.input_len()), segment)),
+                    }
+                } else {
+                    Err(nom::Err::Error(E::from_error_kind(
+                        input,
+                        ErrorKind::IsNot,
+                    )))
+                }
+            },
+            None => {
+                Err(nom::Err::Error(E::from_error_kind(input, ErrorKind::Eof)))
+            },
+        }
     }
 }

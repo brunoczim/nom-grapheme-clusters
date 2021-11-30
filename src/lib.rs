@@ -53,6 +53,8 @@
 //! # }
 //! ```
 
+#![deny(missing_docs)]
+
 pub mod source;
 mod location;
 pub mod span;

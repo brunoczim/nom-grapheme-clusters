@@ -489,6 +489,18 @@ impl<'tok> FindToken<&'tok str> for Span {
     }
 }
 
+impl<'this, 'tok, 'tok_ref> FindToken<&'tok_ref &'tok str> for &'this Span {
+    fn find_token(&self, token: &'tok_ref &'tok str) -> bool {
+        self.find_token(*token)
+    }
+}
+
+impl<'tok, 'tok_ref> FindToken<&'tok_ref &'tok str> for Span {
+    fn find_token(&self, token: &'tok_ref &'tok str) -> bool {
+        (&self).find_token(token)
+    }
+}
+
 impl<'this, 'tok> FindToken<&'tok LocatedSegment> for &'this Span {
     fn find_token(&self, token: &'tok LocatedSegment) -> bool {
         self.segments().any(|segment| &segment == token)
@@ -958,6 +970,20 @@ impl<'this, 'tok> FindToken<&'tok str> for &'this SpanContent {
 
 impl<'tok> FindToken<&'tok str> for SpanContent {
     fn find_token(&self, token: &'tok str) -> bool {
+        (&self).find_token(token)
+    }
+}
+
+impl<'this, 'tok, 'tok_ref> FindToken<&'tok_ref &'tok str>
+    for &'this SpanContent
+{
+    fn find_token(&self, token: &'tok_ref &'tok str) -> bool {
+        self.find_token(*token)
+    }
+}
+
+impl<'tok, 'tok_ref> FindToken<&'tok_ref &'tok str> for SpanContent {
+    fn find_token(&self, token: &'tok_ref &'tok str) -> bool {
         (&self).find_token(token)
     }
 }

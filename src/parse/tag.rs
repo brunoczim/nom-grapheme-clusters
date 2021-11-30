@@ -512,6 +512,22 @@ impl<'slice, 'seg, 'tag, 'tok> FindToken<&'tok str>
     }
 }
 
+impl<'slice, 'seg, 'tok, 'tok_ref> FindToken<&'tok_ref &'tok str>
+    for Tag<'slice, 'seg>
+{
+    fn find_token(&self, token: &'tok_ref &'tok str) -> bool {
+        self.find_token(*token)
+    }
+}
+
+impl<'slice, 'seg, 'tag, 'tok, 'tok_ref> FindToken<&'tok_ref &'tok str>
+    for &'tag Tag<'slice, 'seg>
+{
+    fn find_token(&self, token: &'tok_ref &'tok str) -> bool {
+        (**self).find_token(token)
+    }
+}
+
 impl<'slice, 'seg, 'tok> FindToken<&'tok LocatedSegment> for Tag<'slice, 'seg> {
     fn find_token(&self, token: &'tok LocatedSegment) -> bool {
         self.find_token(token.as_str())
