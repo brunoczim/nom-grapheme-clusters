@@ -75,10 +75,8 @@ mod macros;
 pub mod source;
 mod location;
 pub mod span;
-mod tag;
 pub mod parse;
 
 pub use location::{LocatedSegment, Location};
 pub use source::Source;
 pub use span::{Span, SpanContent};
-pub use tag::Tag;

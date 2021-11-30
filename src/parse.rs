@@ -1,5 +1,8 @@
-use crate::{LocatedSegment, Tag};
+mod tag;
+
+use crate::LocatedSegment;
 use nom::error::{ErrorKind, ParseError};
+pub use tag::Tag;
 
 /// Recognizes zero or more UTF-8 alphabetic segments, possibly with diacritics.
 pub fn alpha0<T, E>(input: T) -> nom::IResult<T, T, E>
