@@ -1,5 +1,6 @@
 use crate::span::{Span, SpanContent};
 use nom::{
+    bytes::complete::tag,
     error::ParseError,
     Compare,
     InputIter,
@@ -7,6 +8,7 @@ use nom::{
     InputTake,
     InputTakeAtPosition,
     Offset,
+    Parser,
     Slice,
 };
 use std::{
@@ -15,8 +17,36 @@ use std::{
     slice,
 };
 
+/// A type usable as tag for a parser without having to create a proper
+/// [`Span`].
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub struct Tag<'slice, 'seg>(pub &'slice [&'seg str]);
+pub struct Tag<'slice, 'seg>(
+    /// A sequence of segment contents.
+    pub &'slice [&'seg str],
+);
+
+impl<'slice, 'seg> Tag<'slice, 'seg> {
+    pub fn parser<T, E>(
+        self,
+    ) -> impl FnMut(T) -> nom::IResult<T, T, E> + 'slice + 'seg
+    where
+        'slice: 'seg,
+        T: nom::InputTake + nom::Compare<Self>,
+        E: ParseError<T>,
+    {
+        move |input| tag(self)(input)
+    }
+}
+
+impl<'slice, 'seg, T, E> Parser<T, T, E> for Tag<'slice, 'seg>
+where
+    T: nom::InputTake + nom::Compare<Self>,
+    E: ParseError<T>,
+{
+    fn parse(&mut self, input: T) -> nom::IResult<T, T, E> {
+        tag(*self)(input)
+    }
+}
 
 impl<'slice, 'seg, T> PartialEq<T> for Tag<'slice, 'seg>
 where

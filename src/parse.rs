@@ -1,4 +1,4 @@
-use crate::LocatedSegment;
+use crate::{LocatedSegment, Tag};
 use nom::error::{ErrorKind, ParseError};
 
 /// Recognizes zero or more UTF-8 alphabetic segments, possibly with diacritics.
@@ -301,26 +301,12 @@ where
 
 pub fn crlf<T, E>(input: T) -> nom::IResult<T, T, E>
 where
-    T: nom::InputIter<Item = LocatedSegment>
-        + nom::InputTakeAtPosition<Item = LocatedSegment>
-        + nom::Offset
-        + nom::InputLength
-        + nom::InputTake
-        + Clone,
+    for<'slice, 'seg> T: nom::InputTake + nom::Compare<Tag<'slice, 'seg>>,
     E: ParseError<T>,
 {
-    match any_segment::<T, E>(input.clone()) {
-        Ok((input1, segment0)) if &segment0 == "\r" => {
-            match any_segment::<T, E>(input1) {
-                Ok((input2, segment1)) if &segment1 == "\n" => {
-                    Ok(input.take_split(input.offset(&input2)))
-                },
-                _ => Err(nom::Err::Error(E::from_error_kind(
-                    input,
-                    ErrorKind::CrLf,
-                ))),
-            }
-        },
-        _ => Err(nom::Err::Error(E::from_error_kind(input, ErrorKind::CrLf))),
+    match Tag(&["\r", "\n"]).parser::<_, nom::error::Error<T>>()(input) {
+        Ok(data) => Ok(data),
+        Err(nom_err) => Err(nom_err
+            .map(|error| E::from_error_kind(error.input, ErrorKind::CrLf))),
     }
 }
