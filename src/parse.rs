@@ -245,6 +245,7 @@ where
     }
 }
 
+/// Recognizes zero or more unicode whitespace graphemes.
 pub fn whitespace0<T, E>(input: T) -> nom::IResult<T, T, E>
 where
     T: nom::InputTakeAtPosition<Item = LocatedSegment>,
@@ -253,6 +254,7 @@ where
     input.split_at_position_complete(|item| !item.is_whitespace())
 }
 
+/// Recognizes one or more unicode whitespace graphemes.
 pub fn whitespace1<T, E>(input: T) -> nom::IResult<T, T, E>
 where
     T: nom::InputTakeAtPosition<Item = LocatedSegment>,
@@ -264,6 +266,7 @@ where
     )
 }
 
+/// Recognizes zero or more ASCII spaces.
 pub fn space0<T, E>(input: T) -> nom::IResult<T, T, E>
 where
     T: nom::InputTakeAtPosition<Item = LocatedSegment>,
@@ -272,6 +275,7 @@ where
     input.split_at_position_complete(|item| !item.is_space())
 }
 
+/// Recognizes one or more ASCII spaces.
 pub fn space1<T, E>(input: T) -> nom::IResult<T, T, E>
 where
     T: nom::InputTakeAtPosition<Item = LocatedSegment>,
@@ -280,6 +284,7 @@ where
     input.split_at_position1_complete(|item| !item.is_space(), ErrorKind::Space)
 }
 
+/// Recognizes zero or more linefeed (`'\n'`) ASCII characters.
 pub fn newline0<T, E>(input: T) -> nom::IResult<T, T, E>
 where
     T: nom::InputTakeAtPosition<Item = LocatedSegment>,
@@ -288,6 +293,7 @@ where
     input.split_at_position_complete(|item| !item.is_newline())
 }
 
+/// Recognizes one or more linefeed (`'\n'`) ASCII characters.
 pub fn newline1<T, E>(input: T) -> nom::IResult<T, T, E>
 where
     T: nom::InputTakeAtPosition<Item = LocatedSegment>,
@@ -299,12 +305,13 @@ where
     )
 }
 
+/// Recognizes the sequence `'\r\n'`.
 pub fn crlf<T, E>(input: T) -> nom::IResult<T, T, E>
 where
     for<'slice, 'seg> T: nom::InputTake + nom::Compare<Tag<'slice, 'seg>>,
     E: ParseError<T>,
 {
-    match Tag(&["\r", "\n"]).parser::<_, nom::error::Error<T>>()(input) {
+    match Tag(&["\r", "\n"]).into_fn::<_, nom::error::Error<T>>()(input) {
         Ok(data) => Ok(data),
         Err(nom_err) => Err(nom_err
             .map(|error| E::from_error_kind(error.input, ErrorKind::CrLf))),

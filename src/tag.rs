@@ -26,7 +26,8 @@ pub struct Tag<'slice, 'seg>(
 );
 
 impl<'slice, 'seg> Tag<'slice, 'seg> {
-    pub fn parser<T, E>(
+    /// Converts this tag parsed into a function (also a parser).
+    pub fn into_fn<T, E>(
         self,
     ) -> impl FnMut(T) -> nom::IResult<T, T, E> + 'slice + 'seg
     where
