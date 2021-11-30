@@ -53,9 +53,6 @@
 //! # }
 //! ```
 
-#[macro_use]
-mod macros;
-
 pub mod source;
 mod location;
 pub mod span;
