@@ -553,6 +553,22 @@
 <span id="553">553</span>
 <span id="554">554</span>
 <span id="555">555</span>
+<span id="556">556</span>
+<span id="557">557</span>
+<span id="558">558</span>
+<span id="559">559</span>
+<span id="560">560</span>
+<span id="561">561</span>
+<span id="562">562</span>
+<span id="563">563</span>
+<span id="564">564</span>
+<span id="565">565</span>
+<span id="566">566</span>
+<span id="567">567</span>
+<span id="568">568</span>
+<span id="569">569</span>
+<span id="570">570</span>
+<span id="571">571</span>
 </pre><pre class="rust"><code><span class="doccomment">//! This module defines a tag type for segments. It also implements nom traits</span>
 <span class="doccomment">//! in order to be used with [`Span`] and [`SpanContent`].</span>
 
@@ -1063,6 +1079,22 @@
     <span class="kw">for</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;tag</span> <span class="ident">Tag</span><span class="op">&lt;</span><span class="lifetime">&#39;slice</span>, <span class="lifetime">&#39;seg</span><span class="op">&gt;</span>
 {
     <span class="kw">fn</span> <span class="ident">find_token</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">token</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;tok</span> <span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+        (<span class="kw-2">*</span><span class="kw-2">*</span><span class="self">self</span>).<span class="ident">find_token</span>(<span class="ident">token</span>)
+    }
+}
+
+<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;slice</span>, <span class="lifetime">&#39;seg</span>, <span class="lifetime">&#39;tok</span>, <span class="lifetime">&#39;tok_ref</span><span class="op">&gt;</span> <span class="ident">FindToken</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;tok_ref</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;tok</span> <span class="ident">str</span><span class="op">&gt;</span>
+    <span class="kw">for</span> <span class="ident">Tag</span><span class="op">&lt;</span><span class="lifetime">&#39;slice</span>, <span class="lifetime">&#39;seg</span><span class="op">&gt;</span>
+{
+    <span class="kw">fn</span> <span class="ident">find_token</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">token</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;tok_ref</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;tok</span> <span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+        <span class="self">self</span>.<span class="ident">find_token</span>(<span class="kw-2">*</span><span class="ident">token</span>)
+    }
+}
+
+<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;slice</span>, <span class="lifetime">&#39;seg</span>, <span class="lifetime">&#39;tag</span>, <span class="lifetime">&#39;tok</span>, <span class="lifetime">&#39;tok_ref</span><span class="op">&gt;</span> <span class="ident">FindToken</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;tok_ref</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;tok</span> <span class="ident">str</span><span class="op">&gt;</span>
+    <span class="kw">for</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;tag</span> <span class="ident">Tag</span><span class="op">&lt;</span><span class="lifetime">&#39;slice</span>, <span class="lifetime">&#39;seg</span><span class="op">&gt;</span>
+{
+    <span class="kw">fn</span> <span class="ident">find_token</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">token</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;tok_ref</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;tok</span> <span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
         (<span class="kw-2">*</span><span class="kw-2">*</span><span class="self">self</span>).<span class="ident">find_token</span>(<span class="ident">token</span>)
     }
 }
