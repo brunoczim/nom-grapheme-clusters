@@ -1,8 +1,15 @@
-use crate::span::{Span, SpanContent};
+//! This module defines a tag type for segments. It also implements nom traits
+//! in order to be used with [`Span`] and [`SpanContent`].
+
+use crate::{
+    span::{Span, SpanContent},
+    LocatedSegment,
+};
 use nom::{
     bytes::complete::tag,
     error::ParseError,
     Compare,
+    FindToken,
     InputIter,
     InputLength,
     InputTake,
@@ -12,7 +19,7 @@ use nom::{
     Slice,
 };
 use std::{
-    iter::{Copied, Enumerate},
+    iter::{Enumerate},
     ops::RangeBounds,
     slice,
 };
@@ -26,6 +33,11 @@ pub struct Tag<'slice, 'seg>(
 );
 
 impl<'slice, 'seg> Tag<'slice, 'seg> {
+    /// Returns the length of the tag in segments/grapheme clusters.
+    pub fn len(self) -> usize {
+        self.0.len()
+    }
+
     /// Converts this tag parsed into a function (also a parser).
     pub fn into_fn<T, E>(
         self,
@@ -36,6 +48,20 @@ impl<'slice, 'seg> Tag<'slice, 'seg> {
         E: ParseError<T>,
     {
         move |input| tag(self)(input)
+    }
+
+    /// Returns an iterator over the contents of segments of this tag.
+    pub fn segments(self) -> SegmentContents<'slice, 'seg> {
+        self.into_iter()
+    }
+}
+
+impl<'slice, 'seg> IntoIterator for Tag<'slice, 'seg> {
+    type Item = &'seg str;
+    type IntoIter = SegmentContents<'slice, 'seg>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        SegmentContents { inner: self.0.iter() }
     }
 }
 
@@ -60,7 +86,7 @@ where
 
 impl<'slice, 'seg> InputLength for Tag<'slice, 'seg> {
     fn input_len(&self) -> usize {
-        self.0.len()
+        self.len()
     }
 }
 
@@ -78,14 +104,14 @@ where
 impl<'slice, 'seg> InputIter for Tag<'slice, 'seg> {
     type Item = &'seg str;
     type Iter = Enumerate<Self::IterElem>;
-    type IterElem = Copied<slice::Iter<'slice, &'seg str>>;
+    type IterElem = SegmentContents<'slice, 'seg>;
 
     fn iter_indices(&self) -> Self::Iter {
         self.iter_elements().enumerate()
     }
 
     fn iter_elements(&self) -> Self::IterElem {
-        self.0.iter().copied()
+        self.segments()
     }
 
     fn position<P>(&self, predicate: P) -> Option<usize>
@@ -473,5 +499,61 @@ impl<'slice, 'seg, 'tag> Compare<&'tag Tag<'slice, 'seg>> for SpanContent {
         input: &'tag Tag<'slice, 'seg>,
     ) -> nom::CompareResult {
         self.span().compare_no_case(input)
+    }
+}
+
+impl<'slice, 'seg, 'tok> FindToken<&'tok str> for Tag<'slice, 'seg> {
+    fn find_token(&self, token: &'tok str) -> bool {
+        self.0.iter().any(|segment| *segment == token)
+    }
+}
+
+impl<'slice, 'seg, 'tag, 'tok> FindToken<&'tok str>
+    for &'tag Tag<'slice, 'seg>
+{
+    fn find_token(&self, token: &'tok str) -> bool {
+        (**self).find_token(token)
+    }
+}
+
+impl<'slice, 'seg, 'tok> FindToken<&'tok LocatedSegment> for Tag<'slice, 'seg> {
+    fn find_token(&self, token: &'tok LocatedSegment) -> bool {
+        self.find_token(token.as_str())
+    }
+}
+
+impl<'slice, 'seg, 'tag, 'tok> FindToken<&'tok LocatedSegment>
+    for &'tag Tag<'slice, 'seg>
+{
+    fn find_token(&self, token: &'tok LocatedSegment) -> bool {
+        (**self).find_token(token)
+    }
+}
+
+impl<'slice, 'seg, 'tok> FindToken<LocatedSegment> for Tag<'slice, 'seg> {
+    fn find_token(&self, token: LocatedSegment) -> bool {
+        self.find_token(token.as_str())
+    }
+}
+
+impl<'slice, 'seg, 'tag, 'tok> FindToken<LocatedSegment>
+    for &'tag Tag<'slice, 'seg>
+{
+    fn find_token(&self, token: LocatedSegment) -> bool {
+        (**self).find_token(token)
+    }
+}
+
+/// Iterator over segment contents of a [`Tag`]. See [`Tag::segments`].
+#[derive(Debug, Clone)]
+pub struct SegmentContents<'slice, 'seg> {
+    inner: slice::Iter<'slice, &'seg str>,
+}
+
+impl<'slice, 'seg> Iterator for SegmentContents<'slice, 'seg> {
+    type Item = &'seg str;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        self.inner.next().copied()
     }
 }

@@ -10,6 +10,7 @@ use crate::{
 use nom::{
     error::ParseError,
     Compare,
+    FindToken,
     InputIter,
     InputLength,
     InputTake,
@@ -476,6 +477,42 @@ impl<'this> Compare<SpanContent> for &'this Span {
     }
 }
 
+impl<'this, 'tok> FindToken<&'tok str> for &'this Span {
+    fn find_token(&self, token: &'tok str) -> bool {
+        self.segments().any(|segment| segment.as_str() == token)
+    }
+}
+
+impl<'tok> FindToken<&'tok str> for Span {
+    fn find_token(&self, token: &'tok str) -> bool {
+        (&self).find_token(token)
+    }
+}
+
+impl<'this, 'tok> FindToken<&'tok LocatedSegment> for &'this Span {
+    fn find_token(&self, token: &'tok LocatedSegment) -> bool {
+        self.segments().any(|segment| &segment == token)
+    }
+}
+
+impl<'tok> FindToken<&'tok LocatedSegment> for Span {
+    fn find_token(&self, token: &'tok LocatedSegment) -> bool {
+        (&self).find_token(token)
+    }
+}
+
+impl<'this, 'tok> FindToken<LocatedSegment> for &'this Span {
+    fn find_token(&self, token: LocatedSegment) -> bool {
+        self.find_token(&token)
+    }
+}
+
+impl<'tok> FindToken<LocatedSegment> for Span {
+    fn find_token(&self, token: LocatedSegment) -> bool {
+        (&self).find_token(&token)
+    }
+}
+
 /// Iterator over located segments of a [`Span`]. Created by [`Span::segments`]
 /// or [`SpanContent::segments`], as well via [`IntoIterator`] trait.
 /// Double-ended and sized.
@@ -910,5 +947,41 @@ impl<'this> Compare<SpanContent> for &'this SpanContent {
 
     fn compare_no_case(&self, input: SpanContent) -> nom::CompareResult {
         (**self).compare_no_case(input)
+    }
+}
+
+impl<'this, 'tok> FindToken<&'tok str> for &'this SpanContent {
+    fn find_token(&self, token: &'tok str) -> bool {
+        self.segments().any(|segment| segment.as_str() == token)
+    }
+}
+
+impl<'tok> FindToken<&'tok str> for SpanContent {
+    fn find_token(&self, token: &'tok str) -> bool {
+        (&self).find_token(token)
+    }
+}
+
+impl<'this, 'tok> FindToken<&'tok LocatedSegment> for &'this SpanContent {
+    fn find_token(&self, token: &'tok LocatedSegment) -> bool {
+        self.segments().any(|segment| &segment == token)
+    }
+}
+
+impl<'tok> FindToken<&'tok LocatedSegment> for SpanContent {
+    fn find_token(&self, token: &'tok LocatedSegment) -> bool {
+        (&self).find_token(token)
+    }
+}
+
+impl<'this, 'tok> FindToken<LocatedSegment> for &'this SpanContent {
+    fn find_token(&self, token: LocatedSegment) -> bool {
+        self.find_token(&token)
+    }
+}
+
+impl<'tok> FindToken<LocatedSegment> for SpanContent {
+    fn find_token(&self, token: LocatedSegment) -> bool {
+        (&self).find_token(&token)
     }
 }
