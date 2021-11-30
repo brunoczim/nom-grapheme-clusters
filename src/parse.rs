@@ -1,6 +1,5 @@
 use crate::LocatedSegment;
 use nom::error::{ErrorKind, ParseError};
-use std::ops::RangeFrom;
 
 /// Recognizes zero or more UTF-8 alphabetic segments, possibly with diacritics.
 pub fn alpha0<T, E>(input: T) -> nom::IResult<T, T, E>
@@ -86,7 +85,7 @@ where
 {
     input.split_at_position1_complete(
         |item| !item.is_alphanumeric(),
-        ErrorKind::Alpha,
+        ErrorKind::AlphaNumeric,
     )
 }
 
@@ -109,7 +108,7 @@ where
 {
     input.split_at_position1_complete(
         |item| !item.is_alphanumeric() || !item.is_single_char(),
-        ErrorKind::Alpha,
+        ErrorKind::AlphaNumeric,
     )
 }
 
@@ -130,7 +129,7 @@ where
 {
     input.split_at_position1_complete(
         |item| !item.is_ascii_alphanumeric(),
-        ErrorKind::Alpha,
+        ErrorKind::AlphaNumeric,
     )
 }
 
@@ -151,7 +150,7 @@ where
 {
     input.split_at_position1_complete(
         |item| !item.is_numeric(),
-        ErrorKind::Alpha,
+        ErrorKind::Digit,
     )
 }
 
@@ -174,7 +173,7 @@ where
 {
     input.split_at_position1_complete(
         |item| !item.is_numeric() || !item.is_single_char(),
-        ErrorKind::Alpha,
+        ErrorKind::Digit,
     )
 }
 
@@ -195,7 +194,7 @@ where
 {
     input.split_at_position1_complete(
         |item| !item.is_ascii_numeric(),
-        ErrorKind::Alpha,
+        ErrorKind::Digit,
     )
 }
 
@@ -219,7 +218,11 @@ where
     move |input| {
         input.split_at_position1_complete(
             |item| item.is_digit(base),
-            ErrorKind::Alpha,
+            match base {
+                8 => ErrorKind::OctDigit,
+                16 => ErrorKind::HexDigit,
+                _ => ErrorKind::Digit,
+            },
         )
     }
 }
@@ -240,4 +243,39 @@ where
         },
         None => Err(nom::Err::Error(E::from_error_kind(input, ErrorKind::Eof))),
     }
+}
+
+pub fn whitespace0<T, E>(input: T) -> nom::IResult<T, T, E>
+where
+    T: nom::InputTakeAtPosition<Item = LocatedSegment>,
+    E: ParseError<T>,
+{
+    input.split_at_position_complete(|item| !item.is_whitespace())
+}
+
+pub fn whitespace1<T, E>(input: T) -> nom::IResult<T, T, E>
+where
+    T: nom::InputTakeAtPosition<Item = LocatedSegment>,
+    E: ParseError<T>,
+{
+    input.split_at_position1_complete(
+        |item| !item.is_whitespace(),
+        ErrorKind::Space,
+    )
+}
+
+pub fn space0<T, E>(input: T) -> nom::IResult<T, T, E>
+where
+    T: nom::InputTakeAtPosition<Item = LocatedSegment>,
+    E: ParseError<T>,
+{
+    input.split_at_position_complete(|item| !item.is_space())
+}
+
+pub fn space1<T, E>(input: T) -> nom::IResult<T, T, E>
+where
+    T: nom::InputTakeAtPosition<Item = LocatedSegment>,
+    E: ParseError<T>,
+{
+    input.split_at_position1_complete(|item| !item.is_space(), ErrorKind::Space)
 }

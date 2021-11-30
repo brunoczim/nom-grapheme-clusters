@@ -215,9 +215,14 @@ impl LocatedSegment {
         self == "\n"
     }
 
+    /// Tests whether this segment is a single space.
+    pub fn is_space(&self) -> bool {
+        self == " "
+    }
+
     /// Tests whether this segment is composed only by UTF-8 whitespace
     /// characters.
-    pub fn is_space(&self) -> bool {
+    pub fn is_whitespace(&self) -> bool {
         self.chars().all(char::is_whitespace)
     }
 }
