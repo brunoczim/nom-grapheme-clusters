@@ -6,6 +6,7 @@ use crate::LocatedSegment;
 use nom::{
     error::{ErrorKind, ParseError},
     FindToken,
+    Parser,
 };
 pub use tag::Tag;
 
@@ -274,28 +275,17 @@ where
     input.split_at_position1_complete(|item| !item.is_space(), ErrorKind::Space)
 }
 
-/// Recognizes zero or more linefeed (`'\n'`) ASCII characters.
-pub fn newline0<T, E>(input: T) -> nom::IResult<T, T, E>
+/// Recognizes one linefeed (`'\n'`) ASCII character.
+pub fn newline<T, E>(input: T) -> nom::IResult<T, T::Item, E>
 where
-    T: nom::InputTakeAtPosition<Item = LocatedSegment>,
+    T: nom::InputIter + nom::InputLength + nom::InputTake,
+    for<'tok> T::Item: PartialEq<&'tok str>,
     E: ParseError<T>,
 {
-    input.split_at_position_complete(|item| !item.is_newline())
+    segment("\n")(input)
 }
 
-/// Recognizes one or more linefeed (`'\n'`) ASCII characters.
-pub fn newline1<T, E>(input: T) -> nom::IResult<T, T, E>
-where
-    T: nom::InputTakeAtPosition<Item = LocatedSegment>,
-    E: ParseError<T>,
-{
-    input.split_at_position1_complete(
-        |item| !item.is_newline(),
-        ErrorKind::Space,
-    )
-}
-
-/// Recognizes the sequence `'\r\n'`.
+/// Recognizes the sequence `"\r\n"`.
 pub fn crlf<T, E>(input: T) -> nom::IResult<T, T, E>
 where
     for<'slice, 'seg> T: nom::InputTake + nom::Compare<Tag<'slice, 'seg>>,
@@ -306,6 +296,16 @@ where
         Err(nom_err) => Err(nom_err
             .map(|error| E::from_error_kind(error.input, ErrorKind::CrLf))),
     }
+}
+
+/// Parses line ending, either a linefeed or a `"\r\n"` sequence.
+pub fn line_ending<T, E>(input: T) -> nom::IResult<T, T, E>
+where
+    for<'slice, 'seg> T: nom::InputTake + nom::Compare<Tag<'slice, 'seg>>,
+    T: Clone,
+    E: ParseError<T>,
+{
+    Parser::<T, T, E>::or(Tag(&["\r", "\n"]), Tag(&["\n"])).parse(input)
 }
 
 /// Recognizes the given grapheme cluster/segment.
