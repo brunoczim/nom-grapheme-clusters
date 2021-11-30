@@ -18,11 +18,7 @@ use nom::{
     Parser,
     Slice,
 };
-use std::{
-    iter::{Enumerate},
-    ops::RangeBounds,
-    slice,
-};
+use std::{iter::Enumerate, ops::RangeBounds, slice};
 
 /// A type usable as tag for a parser without having to create a proper
 /// [`Span`].
