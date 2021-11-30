@@ -64,34 +64,12 @@
 <span id="64">64</span>
 <span id="65">65</span>
 <span id="66">66</span>
-<span id="67">67</span>
-<span id="68">68</span>
-<span id="69">69</span>
-<span id="70">70</span>
-<span id="71">71</span>
-<span id="72">72</span>
-<span id="73">73</span>
-<span id="74">74</span>
-<span id="75">75</span>
-<span id="76">76</span>
-<span id="77">77</span>
-<span id="78">78</span>
-<span id="79">79</span>
-<span id="80">80</span>
-<span id="81">81</span>
-<span id="82">82</span>
 </pre><pre class="rust"><code><span class="doccomment">//! This crate provides location for `nom` with support to grapheme clusters.</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! # Examples</span>
 <span class="doccomment">//! ```</span>
-<span class="doccomment">//! use nom_grapheme_clusters::{Source, Span, SpanContent, tag_table};</span>
-<span class="doccomment">//! use nom::{IResult, bytes::complete::tag, combinator::map};</span>
-<span class="doccomment">//!</span>
-<span class="doccomment">//! #[derive(Debug, Clone)]</span>
-<span class="doccomment">//! struct Tags {</span>
-<span class="doccomment">//!     smth: Span,</span>
-<span class="doccomment">//!     atn: Span,</span>
-<span class="doccomment">//! }</span>
+<span class="doccomment">//! use nom_grapheme_clusters::{Source, Span, SpanContent, parse::Tag};</span>
+<span class="doccomment">//! use nom::{IResult, combinator::map};</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! #[derive(Debug, Clone, PartialEq, Eq)]</span>
 <span class="doccomment">//! struct ParsedAtn {</span>
@@ -103,29 +81,19 @@
 <span class="doccomment">//!     span: Span,</span>
 <span class="doccomment">//! }</span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//! fn parse_smth&lt;&#39;a&gt;(</span>
-<span class="doccomment">//!     tags: &amp;&#39;a Tags</span>
-<span class="doccomment">//! ) -&gt; impl FnMut(Span) -&gt; IResult&lt;Span, ParsedAtn&gt; + &#39;a {</span>
-<span class="doccomment">//!     map(tag(&amp;tags.smth), |span| ParsedAtn { span })</span>
+<span class="doccomment">//! fn parse_smth(input: Span) -&gt; IResult&lt;Span, ParsedSmth&gt; {</span>
+<span class="doccomment">//!     map(Tag(&amp;[&quot;s&quot;, &quot;m&quot;, &quot;t&quot;, &quot;h&quot;]), |span| ParsedSmth { span })(input)</span>
 <span class="doccomment">//! }</span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//! fn parse_atn&lt;&#39;a&gt;(</span>
-<span class="doccomment">//!     tags: &amp;&#39;a Tags</span>
-<span class="doccomment">//! ) -&gt; impl FnMut(Span) -&gt; IResult&lt;Span, ParsedAtn&gt; + &#39;a {</span>
-<span class="doccomment">//!     map(tag(&amp;tags.atn), |span| ParsedAtn { span })</span>
+<span class="doccomment">//! fn parse_atn(input: Span) -&gt; IResult&lt;Span, ParsedAtn&gt; {</span>
+<span class="doccomment">//!     map(Tag(&amp;[&quot;a&quot;, &quot;t&quot;, &quot;n̩̊&quot;]), |span| ParsedAtn { span })(input)</span>
 <span class="doccomment">//! }</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! # fn main() {</span>
-<span class="doccomment">//! let tags = tag_table! {</span>
-<span class="doccomment">//!     Tags {</span>
-<span class="doccomment">//!         smth: &quot;smth&quot;,</span>
-<span class="doccomment">//!         atn: &quot;atn̩̊&quot;,</span>
-<span class="doccomment">//!     }</span>
-<span class="doccomment">//! };</span>
 <span class="doccomment">//! let source = Source::new(&quot;file.txt&quot;, &quot;atn̩̊smtha&quot;);</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! let span0 = source.full_span();</span>
-<span class="doccomment">//! let (span1, parsed) = parse_atn(&amp;tags)(span0).unwrap();</span>
+<span class="doccomment">//! let (span1, parsed) = parse_atn(span0).unwrap();</span>
 <span class="doccomment">//! assert_eq!(parsed.span.as_str(), &quot;atn̩̊&quot;);</span>
 <span class="doccomment">//! assert_eq!(parsed.span.start().position(), 0);</span>
 <span class="doccomment">//! assert_eq!(parsed.span.start().line(), 0);</span>
@@ -135,7 +103,7 @@
 <span class="doccomment">//! assert_eq!(parsed.span.end().line(), 0);</span>
 <span class="doccomment">//! assert_eq!(parsed.span.end().column(), 3);</span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//! let (span2, parsed) = parse_smth(&amp;tags)(span1).unwrap();</span>
+<span class="doccomment">//! let (span2, parsed) = parse_smth(span1).unwrap();</span>
 <span class="doccomment">//! assert_eq!(parsed.span.as_str(), &quot;smth&quot;);</span>
 <span class="doccomment">//! assert_eq!(parsed.span.start().position(), 3);</span>
 <span class="doccomment">//! assert_eq!(parsed.span.start().line(), 0);</span>
@@ -145,7 +113,7 @@
 <span class="doccomment">//! assert_eq!(parsed.span.end().line(), 0);</span>
 <span class="doccomment">//! assert_eq!(parsed.span.end().column(), 7);</span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//! let result = parse_atn(&amp;tags)(span2);</span>
+<span class="doccomment">//! let result = parse_atn(span2);</span>
 <span class="doccomment">//! assert!(result.is_err());</span>
 <span class="doccomment">//! println!(&quot;{}&quot;, result.unwrap_err());</span>
 <span class="doccomment">//! # }</span>
