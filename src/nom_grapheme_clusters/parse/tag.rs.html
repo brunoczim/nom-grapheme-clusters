@@ -475,11 +475,100 @@
 <span id="475">475</span>
 <span id="476">476</span>
 <span id="477">477</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::span</span>::{<span class="ident">Span</span>, <span class="ident">SpanContent</span>};
+<span id="478">478</span>
+<span id="479">479</span>
+<span id="480">480</span>
+<span id="481">481</span>
+<span id="482">482</span>
+<span id="483">483</span>
+<span id="484">484</span>
+<span id="485">485</span>
+<span id="486">486</span>
+<span id="487">487</span>
+<span id="488">488</span>
+<span id="489">489</span>
+<span id="490">490</span>
+<span id="491">491</span>
+<span id="492">492</span>
+<span id="493">493</span>
+<span id="494">494</span>
+<span id="495">495</span>
+<span id="496">496</span>
+<span id="497">497</span>
+<span id="498">498</span>
+<span id="499">499</span>
+<span id="500">500</span>
+<span id="501">501</span>
+<span id="502">502</span>
+<span id="503">503</span>
+<span id="504">504</span>
+<span id="505">505</span>
+<span id="506">506</span>
+<span id="507">507</span>
+<span id="508">508</span>
+<span id="509">509</span>
+<span id="510">510</span>
+<span id="511">511</span>
+<span id="512">512</span>
+<span id="513">513</span>
+<span id="514">514</span>
+<span id="515">515</span>
+<span id="516">516</span>
+<span id="517">517</span>
+<span id="518">518</span>
+<span id="519">519</span>
+<span id="520">520</span>
+<span id="521">521</span>
+<span id="522">522</span>
+<span id="523">523</span>
+<span id="524">524</span>
+<span id="525">525</span>
+<span id="526">526</span>
+<span id="527">527</span>
+<span id="528">528</span>
+<span id="529">529</span>
+<span id="530">530</span>
+<span id="531">531</span>
+<span id="532">532</span>
+<span id="533">533</span>
+<span id="534">534</span>
+<span id="535">535</span>
+<span id="536">536</span>
+<span id="537">537</span>
+<span id="538">538</span>
+<span id="539">539</span>
+<span id="540">540</span>
+<span id="541">541</span>
+<span id="542">542</span>
+<span id="543">543</span>
+<span id="544">544</span>
+<span id="545">545</span>
+<span id="546">546</span>
+<span id="547">547</span>
+<span id="548">548</span>
+<span id="549">549</span>
+<span id="550">550</span>
+<span id="551">551</span>
+<span id="552">552</span>
+<span id="553">553</span>
+<span id="554">554</span>
+<span id="555">555</span>
+<span id="556">556</span>
+<span id="557">557</span>
+<span id="558">558</span>
+<span id="559">559</span>
+</pre><pre class="rust"><code><span class="doccomment">//! This module defines a tag type for segments. It also implements nom traits</span>
+<span class="doccomment">//! in order to be used with [`Span`] and [`SpanContent`].</span>
+
+<span class="kw">use</span> <span class="kw">crate</span>::{
+    <span class="ident">span</span>::{<span class="ident">Span</span>, <span class="ident">SpanContent</span>},
+    <span class="ident">LocatedSegment</span>,
+};
 <span class="kw">use</span> <span class="ident">nom</span>::{
     <span class="ident">bytes::complete::tag</span>,
     <span class="ident">error::ParseError</span>,
     <span class="ident">Compare</span>,
+    <span class="ident">FindToken</span>,
     <span class="ident">InputIter</span>,
     <span class="ident">InputLength</span>,
     <span class="ident">InputTake</span>,
@@ -489,7 +578,7 @@
     <span class="ident">Slice</span>,
 };
 <span class="kw">use</span> <span class="ident">std</span>::{
-    <span class="ident">iter</span>::{<span class="ident">Copied</span>, <span class="ident">Enumerate</span>},
+    <span class="ident">iter</span>::{<span class="ident">Enumerate</span>},
     <span class="ident">ops::RangeBounds</span>,
     <span class="ident">slice</span>,
 };
@@ -503,6 +592,11 @@
 );
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;slice</span>, <span class="lifetime">&#39;seg</span><span class="op">&gt;</span> <span class="ident">Tag</span><span class="op">&lt;</span><span class="lifetime">&#39;slice</span>, <span class="lifetime">&#39;seg</span><span class="op">&gt;</span> {
+    <span class="doccomment">/// Returns the length of the tag in segments/grapheme clusters.</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">len</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
+        <span class="self">self</span>.<span class="number">0</span>.<span class="ident">len</span>()
+    }
+
     <span class="doccomment">/// Converts this tag parsed into a function (also a parser).</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">into_fn</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">E</span><span class="op">&gt;</span>(
         <span class="self">self</span>,
@@ -513,6 +607,20 @@
         <span class="ident">E</span>: <span class="ident">ParseError</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
     {
         <span class="kw">move</span> <span class="op">|</span><span class="ident">input</span><span class="op">|</span> <span class="ident">tag</span>(<span class="self">self</span>)(<span class="ident">input</span>)
+    }
+
+    <span class="doccomment">/// Returns an iterator over the contents of segments of this tag.</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">segments</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">SegmentContents</span><span class="op">&lt;</span><span class="lifetime">&#39;slice</span>, <span class="lifetime">&#39;seg</span><span class="op">&gt;</span> {
+        <span class="self">self</span>.<span class="ident">into_iter</span>()
+    }
+}
+
+<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;slice</span>, <span class="lifetime">&#39;seg</span><span class="op">&gt;</span> <span class="ident">IntoIterator</span> <span class="kw">for</span> <span class="ident">Tag</span><span class="op">&lt;</span><span class="lifetime">&#39;slice</span>, <span class="lifetime">&#39;seg</span><span class="op">&gt;</span> {
+    <span class="kw">type</span> <span class="ident">Item</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;seg</span> <span class="ident">str</span>;
+    <span class="kw">type</span> <span class="ident">IntoIter</span> <span class="op">=</span> <span class="ident">SegmentContents</span><span class="op">&lt;</span><span class="lifetime">&#39;slice</span>, <span class="lifetime">&#39;seg</span><span class="op">&gt;</span>;
+
+    <span class="kw">fn</span> <span class="ident">into_iter</span>(<span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident"><span class="self">Self</span>::IntoIter</span> {
+        <span class="ident">SegmentContents</span> { <span class="ident">inner</span>: <span class="self">self</span>.<span class="number">0</span>.<span class="ident">iter</span>() }
     }
 }
 
@@ -537,7 +645,7 @@
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;slice</span>, <span class="lifetime">&#39;seg</span><span class="op">&gt;</span> <span class="ident">InputLength</span> <span class="kw">for</span> <span class="ident">Tag</span><span class="op">&lt;</span><span class="lifetime">&#39;slice</span>, <span class="lifetime">&#39;seg</span><span class="op">&gt;</span> {
     <span class="kw">fn</span> <span class="ident">input_len</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
-        <span class="self">self</span>.<span class="number">0</span>.<span class="ident">len</span>()
+        <span class="self">self</span>.<span class="ident">len</span>()
     }
 }
 
@@ -555,14 +663,14 @@
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;slice</span>, <span class="lifetime">&#39;seg</span><span class="op">&gt;</span> <span class="ident">InputIter</span> <span class="kw">for</span> <span class="ident">Tag</span><span class="op">&lt;</span><span class="lifetime">&#39;slice</span>, <span class="lifetime">&#39;seg</span><span class="op">&gt;</span> {
     <span class="kw">type</span> <span class="ident">Item</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;seg</span> <span class="ident">str</span>;
     <span class="kw">type</span> <span class="ident">Iter</span> <span class="op">=</span> <span class="ident">Enumerate</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::IterElem</span><span class="op">&gt;</span>;
-    <span class="kw">type</span> <span class="ident">IterElem</span> <span class="op">=</span> <span class="ident">Copied</span><span class="op">&lt;</span><span class="ident">slice::Iter</span><span class="op">&lt;</span><span class="lifetime">&#39;slice</span>, <span class="kw-2">&amp;</span><span class="lifetime">&#39;seg</span> <span class="ident">str</span><span class="op">&gt;</span><span class="op">&gt;</span>;
+    <span class="kw">type</span> <span class="ident">IterElem</span> <span class="op">=</span> <span class="ident">SegmentContents</span><span class="op">&lt;</span><span class="lifetime">&#39;slice</span>, <span class="lifetime">&#39;seg</span><span class="op">&gt;</span>;
 
     <span class="kw">fn</span> <span class="ident">iter_indices</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident"><span class="self">Self</span>::Iter</span> {
         <span class="self">self</span>.<span class="ident">iter_elements</span>().<span class="ident">enumerate</span>()
     }
 
     <span class="kw">fn</span> <span class="ident">iter_elements</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident"><span class="self">Self</span>::IterElem</span> {
-        <span class="self">self</span>.<span class="number">0</span>.<span class="ident">iter</span>().<span class="ident">copied</span>()
+        <span class="self">self</span>.<span class="ident">segments</span>()
     }
 
     <span class="kw">fn</span> <span class="ident">position</span><span class="op">&lt;</span><span class="ident">P</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">predicate</span>: <span class="ident">P</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>
@@ -950,6 +1058,62 @@
         <span class="ident">input</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;tag</span> <span class="ident">Tag</span><span class="op">&lt;</span><span class="lifetime">&#39;slice</span>, <span class="lifetime">&#39;seg</span><span class="op">&gt;</span>,
     ) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">nom::CompareResult</span> {
         <span class="self">self</span>.<span class="ident">span</span>().<span class="ident">compare_no_case</span>(<span class="ident">input</span>)
+    }
+}
+
+<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;slice</span>, <span class="lifetime">&#39;seg</span>, <span class="lifetime">&#39;tok</span><span class="op">&gt;</span> <span class="ident">FindToken</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;tok</span> <span class="ident">str</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Tag</span><span class="op">&lt;</span><span class="lifetime">&#39;slice</span>, <span class="lifetime">&#39;seg</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">find_token</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">token</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;tok</span> <span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+        <span class="self">self</span>.<span class="number">0</span>.<span class="ident">iter</span>().<span class="ident">any</span>(<span class="op">|</span><span class="ident">segment</span><span class="op">|</span> <span class="kw-2">*</span><span class="ident">segment</span> <span class="op">=</span><span class="op">=</span> <span class="ident">token</span>)
+    }
+}
+
+<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;slice</span>, <span class="lifetime">&#39;seg</span>, <span class="lifetime">&#39;tag</span>, <span class="lifetime">&#39;tok</span><span class="op">&gt;</span> <span class="ident">FindToken</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;tok</span> <span class="ident">str</span><span class="op">&gt;</span>
+    <span class="kw">for</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;tag</span> <span class="ident">Tag</span><span class="op">&lt;</span><span class="lifetime">&#39;slice</span>, <span class="lifetime">&#39;seg</span><span class="op">&gt;</span>
+{
+    <span class="kw">fn</span> <span class="ident">find_token</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">token</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;tok</span> <span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+        (<span class="kw-2">*</span><span class="kw-2">*</span><span class="self">self</span>).<span class="ident">find_token</span>(<span class="ident">token</span>)
+    }
+}
+
+<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;slice</span>, <span class="lifetime">&#39;seg</span>, <span class="lifetime">&#39;tok</span><span class="op">&gt;</span> <span class="ident">FindToken</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;tok</span> <span class="ident">LocatedSegment</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Tag</span><span class="op">&lt;</span><span class="lifetime">&#39;slice</span>, <span class="lifetime">&#39;seg</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">find_token</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">token</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;tok</span> <span class="ident">LocatedSegment</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+        <span class="self">self</span>.<span class="ident">find_token</span>(<span class="ident">token</span>.<span class="ident">as_str</span>())
+    }
+}
+
+<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;slice</span>, <span class="lifetime">&#39;seg</span>, <span class="lifetime">&#39;tag</span>, <span class="lifetime">&#39;tok</span><span class="op">&gt;</span> <span class="ident">FindToken</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;tok</span> <span class="ident">LocatedSegment</span><span class="op">&gt;</span>
+    <span class="kw">for</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;tag</span> <span class="ident">Tag</span><span class="op">&lt;</span><span class="lifetime">&#39;slice</span>, <span class="lifetime">&#39;seg</span><span class="op">&gt;</span>
+{
+    <span class="kw">fn</span> <span class="ident">find_token</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">token</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;tok</span> <span class="ident">LocatedSegment</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+        (<span class="kw-2">*</span><span class="kw-2">*</span><span class="self">self</span>).<span class="ident">find_token</span>(<span class="ident">token</span>)
+    }
+}
+
+<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;slice</span>, <span class="lifetime">&#39;seg</span>, <span class="lifetime">&#39;tok</span><span class="op">&gt;</span> <span class="ident">FindToken</span><span class="op">&lt;</span><span class="ident">LocatedSegment</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Tag</span><span class="op">&lt;</span><span class="lifetime">&#39;slice</span>, <span class="lifetime">&#39;seg</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">find_token</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">token</span>: <span class="ident">LocatedSegment</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+        <span class="self">self</span>.<span class="ident">find_token</span>(<span class="ident">token</span>.<span class="ident">as_str</span>())
+    }
+}
+
+<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;slice</span>, <span class="lifetime">&#39;seg</span>, <span class="lifetime">&#39;tag</span>, <span class="lifetime">&#39;tok</span><span class="op">&gt;</span> <span class="ident">FindToken</span><span class="op">&lt;</span><span class="ident">LocatedSegment</span><span class="op">&gt;</span>
+    <span class="kw">for</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;tag</span> <span class="ident">Tag</span><span class="op">&lt;</span><span class="lifetime">&#39;slice</span>, <span class="lifetime">&#39;seg</span><span class="op">&gt;</span>
+{
+    <span class="kw">fn</span> <span class="ident">find_token</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">token</span>: <span class="ident">LocatedSegment</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+        (<span class="kw-2">*</span><span class="kw-2">*</span><span class="self">self</span>).<span class="ident">find_token</span>(<span class="ident">token</span>)
+    }
+}
+
+<span class="doccomment">/// Iterator over segment contents of a [`Tag`]. See [`Tag::segments`].</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">SegmentContents</span><span class="op">&lt;</span><span class="lifetime">&#39;slice</span>, <span class="lifetime">&#39;seg</span><span class="op">&gt;</span> {
+    <span class="ident">inner</span>: <span class="ident">slice::Iter</span><span class="op">&lt;</span><span class="lifetime">&#39;slice</span>, <span class="kw-2">&amp;</span><span class="lifetime">&#39;seg</span> <span class="ident">str</span><span class="op">&gt;</span>,
+}
+
+<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;slice</span>, <span class="lifetime">&#39;seg</span><span class="op">&gt;</span> <span class="ident">Iterator</span> <span class="kw">for</span> <span class="ident">SegmentContents</span><span class="op">&lt;</span><span class="lifetime">&#39;slice</span>, <span class="lifetime">&#39;seg</span><span class="op">&gt;</span> {
+    <span class="kw">type</span> <span class="ident">Item</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;seg</span> <span class="ident">str</span>;
+
+    <span class="kw">fn</span> <span class="ident">next</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
+        <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">next</span>().<span class="ident">copied</span>()
     }
 }
 </code></pre></div>
