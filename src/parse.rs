@@ -279,3 +279,48 @@ where
 {
     input.split_at_position1_complete(|item| !item.is_space(), ErrorKind::Space)
 }
+
+pub fn newline0<T, E>(input: T) -> nom::IResult<T, T, E>
+where
+    T: nom::InputTakeAtPosition<Item = LocatedSegment>,
+    E: ParseError<T>,
+{
+    input.split_at_position_complete(|item| !item.is_newline())
+}
+
+pub fn newline1<T, E>(input: T) -> nom::IResult<T, T, E>
+where
+    T: nom::InputTakeAtPosition<Item = LocatedSegment>,
+    E: ParseError<T>,
+{
+    input.split_at_position1_complete(
+        |item| !item.is_newline(),
+        ErrorKind::Space,
+    )
+}
+
+pub fn crlf<T, E>(input: T) -> nom::IResult<T, T, E>
+where
+    T: nom::InputIter<Item = LocatedSegment>
+        + nom::InputTakeAtPosition<Item = LocatedSegment>
+        + nom::Offset
+        + nom::InputLength
+        + nom::InputTake
+        + Clone,
+    E: ParseError<T>,
+{
+    match any_segment::<T, E>(input.clone()) {
+        Ok((input1, segment0)) if &segment0 == "\r" => {
+            match any_segment::<T, E>(input1) {
+                Ok((input2, segment1)) if &segment1 == "\n" => {
+                    Ok(input.take_split(input.offset(&input2)))
+                },
+                _ => Err(nom::Err::Error(E::from_error_kind(
+                    input,
+                    ErrorKind::CrLf,
+                ))),
+            }
+        },
+        _ => Err(nom::Err::Error(E::from_error_kind(input, ErrorKind::CrLf))),
+    }
+}
