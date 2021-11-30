@@ -147,6 +147,79 @@ impl LocatedSegment {
     pub fn as_str(&self) -> &str {
         self.location.as_str()
     }
+
+    /// Tests whether this segment is a single character.
+    pub fn is_single_char(&self) -> bool {
+        self.len() == 1
+    }
+
+    /// Tests whether this segment is alphabetic. UTF-8 alphabetic characters
+    /// with diacritics are also considered alphabetic.
+    pub fn is_alphabetic(&self) -> bool {
+        self.chars().next().map_or(false, |ch| ch.is_alphabetic())
+    }
+
+    /// Tests whether this segment is ASCII alphabetic.
+    pub fn is_ascii_alphabetic(&self) -> bool {
+        self.is_single_char()
+            && self.chars().next().map_or(false, |ch| ch.is_ascii_alphabetic())
+    }
+
+    /// Tests whether this segment is numeric. UTF-8 numeric characters
+    /// with diacritics are also considered numeric.
+    pub fn is_numeric(&self) -> bool {
+        self.chars().next().map_or(false, |ch| ch.is_numeric())
+    }
+
+    /// Tests whether this segment is ASCII numeric.
+    pub fn is_ascii_numeric(&self) -> bool {
+        self.is_single_char()
+            && self.chars().next().map_or(false, |ch| ch.is_ascii_digit())
+    }
+
+    /// Tests whether this segment is alphanumeric. UTF-8 alphanumeric
+    /// characters with diacritics are also considered alphanumeric.
+    pub fn is_alphanumeric(&self) -> bool {
+        self.chars().next().map_or(false, |ch| ch.is_alphanumeric())
+    }
+
+    /// Tests whether this segment is ASCII alphanumeric.
+    pub fn is_ascii_alphanumeric(&self) -> bool {
+        self.is_single_char()
+            && self
+                .chars()
+                .next()
+                .map_or(false, |ch| ch.is_ascii_alphanumeric())
+    }
+
+    /// Tests whether this segment is an ASCII digit. Digits characters with
+    /// diacritics are NOT considered digits. Digit characters are `0-9`,
+    /// `a-z`, `A-Z`, depending on the base.
+    pub fn is_digit(&self, base: u32) -> bool {
+        self.is_single_char()
+            && self.chars().next().map_or(false, |ch| ch.is_digit(base))
+    }
+
+    /// Converts this grapheme cluster to a digit of given base. Digits with
+    /// diacritics are not considered digits. Digit characters are `0-9`, `a-z`,
+    /// `A-Z`, depending on the base.
+    pub fn to_digit(&self, base: u32) -> Option<u32> {
+        self.chars()
+            .next()
+            .and_then(|ch| ch.to_digit(base))
+            .filter(|_| self.is_single_char())
+    }
+
+    /// Tests if this segment is only a linefeed character.
+    pub fn is_newline(&self) -> bool {
+        self == "\n"
+    }
+
+    /// Tests whether this segment is composed only by UTF-8 whitespace
+    /// characters.
+    pub fn is_space(&self) -> bool {
+        self.chars().all(char::is_whitespace)
+    }
 }
 
 impl Deref for LocatedSegment {
