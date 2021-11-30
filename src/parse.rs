@@ -363,7 +363,7 @@ where
 }
 
 /// Recognizes any of the grapheme clusters/segments in the given list.
-pub fn any_of<T, L, E>(list: L) -> impl FnMut(T) -> nom::IResult<T, T::Item, E>
+pub fn one_of<T, L, E>(list: L) -> impl FnMut(T) -> nom::IResult<T, T::Item, E>
 where
     T: nom::InputIter + nom::InputLength + nom::InputTake,
     for<'tok> L: FindToken<&'tok T::Item>,
