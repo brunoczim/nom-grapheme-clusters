@@ -4,9 +4,11 @@ mod tag;
 
 use crate::LocatedSegment;
 use nom::{
+    combinator::{opt, recognize},
     error::{ErrorKind, ParseError},
     FindToken,
 };
+use std::ops::{RangeFrom, RangeTo};
 pub use tag::Tag;
 
 /// Recognizes zero or more UTF-8 alphabetic segments, possibly with diacritics.
@@ -469,4 +471,128 @@ where
             Err(nom::Err::Error(E::from_error_kind(input, ErrorKind::Satisfy)))
         },
     }
+}
+
+macro_rules! parse_unsigned_int {
+    ($fn_name:ident, $ty:ty, $($doc:tt)*) => {
+        $($doc)*
+        pub fn $fn_name<T, E>(base: u32) -> impl FnMut(T) -> nom::IResult<T, $ty, E>
+        where
+            T: nom::InputTakeAtPosition<Item = LocatedSegment>,
+            T: AsRef<str> + Clone,
+            E: ParseError<T>,
+        {
+            move |input0| {
+                let (input1, digits) =  digit1(base)(input0.clone())?;
+                match <$ty>::from_str_radix(digits.as_ref(), base) {
+                    Ok(num) => Ok((input1, num)),
+                    Err(_) => Err(nom::Err::Error(E::from_error_kind(
+                        input0,
+                        ErrorKind::TooLarge
+                    ))),
+                }
+            }
+        }
+    };
+}
+
+parse_unsigned_int! {
+    digits_u8,
+    u8,
+    /// Parses an unsigned 8-bit number. Consumes all available digits, but
+    /// might return an error if too large.
+}
+
+parse_unsigned_int! {
+    digits_u16,
+    u16,
+    /// Parses an unsigned 16-bit number. Consumes all available digits, but
+    /// might return an error if too large.
+}
+
+parse_unsigned_int! {
+    digits_u32,
+    u32,
+    /// Parses an unsigned 32-bit number. Consumes all available digits, but
+    /// might return an error if too large.
+}
+
+parse_unsigned_int! {
+    digits_u64,
+    u64,
+    /// Parses an unsigned 64-bit number. Consumes all available digits, but
+    /// might return an error if too large.
+}
+
+parse_unsigned_int! {
+    digits_u128,
+    u128,
+    /// Parses an unsigned 128-bit number. Consumes all available digits, but
+    /// might return an error if too large.
+}
+
+macro_rules! parse_signed_int {
+    ($fn_name:ident, $ty:ty, $($doc:tt)*) => {
+        $($doc)*
+        pub fn $fn_name<T, E>(base: u32) -> impl FnMut(T) -> nom::IResult<T, $ty, E>
+        where
+            T: nom::InputTakeAtPosition<Item = LocatedSegment> + nom::InputTake,
+            T: nom::InputLength + nom::InputIter<Item = LocatedSegment>,
+            T: AsRef<str> + Clone + nom::Offset,
+            T: nom::Slice<RangeFrom<usize>> + nom::Slice<RangeTo<usize>>,
+            E: ParseError<T>,
+        {
+            move |input0| {
+                let (input1, digits) = recognize(
+                    nom::Parser::and(
+                        opt(one_of(Tag(&["+", "-"]))),
+                        digit1(base)
+                    )
+                )(input0.clone())?;
+
+                match <$ty>::from_str_radix(digits.as_ref(), base) {
+                    Ok(num) => Ok((input1, num)),
+                    Err(_) => Err(nom::Err::Error(E::from_error_kind(
+                        input0,
+                        ErrorKind::TooLarge
+                    ))),
+                }
+            }
+        }
+    };
+}
+
+parse_signed_int! {
+    digits_i8,
+    i8,
+    /// Parses a signed 8-bit number. Consumes all available digits, but
+    /// might return an error if too large.
+}
+
+parse_signed_int! {
+    digits_i16,
+    i16,
+    /// Parses a signed 16-bit number. Consumes all available digits, but
+    /// might return an error if too large.
+}
+
+parse_signed_int! {
+    digits_i32,
+    i32,
+    /// Parses a signed 32-bit number. Consumes all available digits, but
+    /// might return an error if too large.
+}
+
+parse_signed_int! {
+    digits_i64,
+    i64,
+    /// Parses a signed 64-bit number. Consumes all available digits, but
+    /// might return an error if too large.
+}
+
+parse_signed_int! {
+    digits_i128,
+    i128,
+    /// Parses a signed 128-bit number. Consumes all available digits, but
+    /// might return an error if too large.
 }
