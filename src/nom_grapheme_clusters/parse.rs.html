@@ -421,6 +421,24 @@
 <span id="421">421</span>
 <span id="422">422</span>
 <span id="423">423</span>
+<span id="424">424</span>
+<span id="425">425</span>
+<span id="426">426</span>
+<span id="427">427</span>
+<span id="428">428</span>
+<span id="429">429</span>
+<span id="430">430</span>
+<span id="431">431</span>
+<span id="432">432</span>
+<span id="433">433</span>
+<span id="434">434</span>
+<span id="435">435</span>
+<span id="436">436</span>
+<span id="437">437</span>
+<span id="438">438</span>
+<span id="439">439</span>
+<span id="440">440</span>
+<span id="441">441</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Exports parse functions related to segments/grapheme clusters.</span>
 
 <span class="kw">mod</span> <span class="ident">tag</span>;
@@ -429,6 +447,7 @@
 <span class="kw">use</span> <span class="ident">nom</span>::{
     <span class="ident">error</span>::{<span class="ident">ErrorKind</span>, <span class="ident">ParseError</span>},
     <span class="ident">FindToken</span>,
+    <span class="ident">InputIter</span>,
 };
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">tag::Tag</span>;
 
@@ -842,6 +861,23 @@
                 <span class="prelude-val">Err</span>(<span class="ident">nom::Err::Error</span>(<span class="ident">E::from_error_kind</span>(<span class="ident">input</span>, <span class="ident">ErrorKind::Eof</span>)))
             },
         }
+    }
+}
+
+<span class="doccomment">/// Recognizes a character that satifies the given `condition` function.</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">satisfy</span><span class="op">&lt;</span><span class="ident">F</span>, <span class="ident">T</span>, <span class="ident">E</span><span class="op">&gt;</span>(
+    <span class="kw-2">mut</span> <span class="ident">condition</span>: <span class="ident">F</span>,
+) <span class="op">-</span><span class="op">&gt;</span> <span class="kw">impl</span> <span class="ident">FnMut</span>(<span class="ident">T</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">nom::IResult</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">T::Item</span>, <span class="ident">E</span><span class="op">&gt;</span>
+<span class="kw">where</span>
+    <span class="kw">for</span><span class="op">&lt;</span><span class="lifetime">&#39;item</span><span class="op">&gt;</span> <span class="ident">F</span>: <span class="ident">FnMut</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;item</span> <span class="ident">T::Item</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span>,
+    <span class="ident">T</span>: <span class="ident">nom::InputTake</span> <span class="op">+</span> <span class="ident">nom::InputIter</span>,
+    <span class="ident">E</span>: <span class="ident">ParseError</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
+{
+    <span class="kw">move</span> <span class="op">|</span><span class="ident">input</span><span class="op">|</span> <span class="kw">match</span> <span class="ident">input</span>.<span class="ident">iter_elements</span>().<span class="ident">next</span>() {
+        <span class="prelude-val">Some</span>(<span class="ident">elem</span>) <span class="kw">if</span> <span class="ident">condition</span>(<span class="kw-2">&amp;</span><span class="ident">elem</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Ok</span>((<span class="ident">input</span>.<span class="ident">take</span>(<span class="number">1</span>), <span class="ident">elem</span>)),
+        <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> {
+            <span class="prelude-val">Err</span>(<span class="ident">nom::Err::Error</span>(<span class="ident">E::from_error_kind</span>(<span class="ident">input</span>, <span class="ident">ErrorKind::Satisfy</span>)))
+        },
     }
 }
 </code></pre></div>
