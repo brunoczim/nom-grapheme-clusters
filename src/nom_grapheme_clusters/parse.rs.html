@@ -449,6 +449,27 @@
 <span id="449">449</span>
 <span id="450">450</span>
 <span id="451">451</span>
+<span id="452">452</span>
+<span id="453">453</span>
+<span id="454">454</span>
+<span id="455">455</span>
+<span id="456">456</span>
+<span id="457">457</span>
+<span id="458">458</span>
+<span id="459">459</span>
+<span id="460">460</span>
+<span id="461">461</span>
+<span id="462">462</span>
+<span id="463">463</span>
+<span id="464">464</span>
+<span id="465">465</span>
+<span id="466">466</span>
+<span id="467">467</span>
+<span id="468">468</span>
+<span id="469">469</span>
+<span id="470">470</span>
+<span id="471">471</span>
+<span id="472">472</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Exports parse functions related to segments/grapheme clusters.</span>
 
 <span class="kw">mod</span> <span class="ident">tag</span>;
@@ -457,7 +478,6 @@
 <span class="kw">use</span> <span class="ident">nom</span>::{
     <span class="ident">error</span>::{<span class="ident">ErrorKind</span>, <span class="ident">ParseError</span>},
     <span class="ident">FindToken</span>,
-    <span class="ident">InputIter</span>,
 };
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">tag::Tag</span>;
 
@@ -749,7 +769,8 @@
 <span class="doccomment">/// Recognizes the sequence `&quot;\r\n&quot;`.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">crlf</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">E</span><span class="op">&gt;</span>(<span class="ident">input</span>: <span class="ident">T</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">nom::IResult</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">T</span>, <span class="ident">E</span><span class="op">&gt;</span>
 <span class="kw">where</span>
-    <span class="kw">for</span><span class="op">&lt;</span><span class="lifetime">&#39;slice</span>, <span class="lifetime">&#39;seg</span><span class="op">&gt;</span> <span class="ident">T</span>: <span class="ident">nom::InputTake</span> <span class="op">+</span> <span class="ident">nom::Compare</span><span class="op">&lt;</span><span class="ident">Tag</span><span class="op">&lt;</span><span class="lifetime">&#39;slice</span>, <span class="lifetime">&#39;seg</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+    <span class="ident">T</span>: <span class="ident">nom::InputTake</span>,
+    <span class="kw">for</span><span class="op">&lt;</span><span class="lifetime">&#39;slice</span>, <span class="lifetime">&#39;seg</span><span class="op">&gt;</span> <span class="ident">T</span>: <span class="ident">nom::Compare</span><span class="op">&lt;</span><span class="ident">Tag</span><span class="op">&lt;</span><span class="lifetime">&#39;slice</span>, <span class="lifetime">&#39;seg</span><span class="op">&gt;</span><span class="op">&gt;</span>,
     <span class="ident">E</span>: <span class="ident">ParseError</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
 {
     <span class="kw">match</span> <span class="ident">Tag</span>(<span class="kw-2">&amp;</span>[<span class="string">&quot;\r&quot;</span>, <span class="string">&quot;\n&quot;</span>]).<span class="ident">into_fn</span>::<span class="op">&lt;</span><span class="kw">_</span>, <span class="ident">nom::error::Error</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">&gt;</span>()(<span class="ident">input</span>) {
@@ -762,7 +783,8 @@
 <span class="doccomment">/// Parses line ending, either a linefeed or a `&quot;\r\n&quot;` sequence.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">line_ending</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">E</span><span class="op">&gt;</span>(<span class="ident">input</span>: <span class="ident">T</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">nom::IResult</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">T</span>, <span class="ident">E</span><span class="op">&gt;</span>
 <span class="kw">where</span>
-    <span class="kw">for</span><span class="op">&lt;</span><span class="lifetime">&#39;slice</span>, <span class="lifetime">&#39;seg</span><span class="op">&gt;</span> <span class="ident">T</span>: <span class="ident">nom::InputTake</span> <span class="op">+</span> <span class="ident">nom::Compare</span><span class="op">&lt;</span><span class="ident">Tag</span><span class="op">&lt;</span><span class="lifetime">&#39;slice</span>, <span class="lifetime">&#39;seg</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+    <span class="ident">T</span>: <span class="ident">nom::InputTake</span>,
+    <span class="kw">for</span><span class="op">&lt;</span><span class="lifetime">&#39;slice</span>, <span class="lifetime">&#39;seg</span><span class="op">&gt;</span> <span class="ident">T</span>: <span class="ident">nom::Compare</span><span class="op">&lt;</span><span class="ident">Tag</span><span class="op">&lt;</span><span class="lifetime">&#39;slice</span>, <span class="lifetime">&#39;seg</span><span class="op">&gt;</span><span class="op">&gt;</span>,
     <span class="ident">E</span>: <span class="ident">ParseError</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
 {
     <span class="kw">match</span> <span class="ident">input</span>.<span class="ident">compare</span>(<span class="ident">Tag</span>(<span class="kw-2">&amp;</span>[<span class="string">&quot;\n&quot;</span>])) {
@@ -772,6 +794,26 @@
             <span class="prelude-val">Err</span>(<span class="ident">nom::Err::Error</span>(<span class="ident">E::from_error_kind</span>(<span class="ident">input</span>, <span class="ident">ErrorKind::CrLf</span>)))
         },
     }
+}
+
+<span class="doccomment">/// Parses segments until a line ending (`&quot;\n&quot;` or `&quot;\r\n&quot;`) is found.</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">not_line_ending</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">E</span><span class="op">&gt;</span>(<span class="ident">input</span>: <span class="ident">T</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">nom::IResult</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">T</span>, <span class="ident">E</span><span class="op">&gt;</span>
+<span class="kw">where</span>
+    <span class="ident">T</span>: <span class="ident">nom::InputTake</span> <span class="op">+</span> <span class="ident">nom::InputIter</span>,
+    <span class="kw">for</span><span class="op">&lt;</span><span class="lifetime">&#39;tok</span><span class="op">&gt;</span> <span class="ident">T::Item</span>: <span class="ident">PartialEq</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;tok</span> <span class="ident">str</span><span class="op">&gt;</span>,
+    <span class="ident">E</span>: <span class="ident">ParseError</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
+{
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">previous_car</span> <span class="op">=</span> <span class="bool-val">false</span>;
+
+    <span class="kw">for</span> (<span class="ident">i</span>, <span class="ident">segment</span>) <span class="kw">in</span> <span class="ident">input</span>.<span class="ident">iter_indices</span>() {
+        <span class="kw">if</span> <span class="ident">segment</span> <span class="op">=</span><span class="op">=</span> <span class="string">&quot;\n&quot;</span> {
+            <span class="kw">let</span> <span class="ident">split_index</span> <span class="op">=</span> <span class="ident">i</span> <span class="op">-</span> <span class="number">1</span> <span class="op">-</span> <span class="ident">usize::from</span>(<span class="ident">previous_car</span>);
+            <span class="kw">return</span> <span class="prelude-val">Ok</span>(<span class="ident">input</span>.<span class="ident">take_split</span>(<span class="ident">split_index</span>));
+        }
+        <span class="ident">previous_car</span> <span class="op">=</span> <span class="ident">segment</span> <span class="op">=</span><span class="op">=</span> <span class="string">&quot;\r&quot;</span>;
+    }
+
+    <span class="prelude-val">Err</span>(<span class="ident">nom::Err::Error</span>(<span class="ident">E::from_error_kind</span>(<span class="ident">input</span>, <span class="ident">ErrorKind::Tag</span>)))
 }
 
 <span class="doccomment">/// Recognizes the given grapheme cluster/segment.</span>
