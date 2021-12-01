@@ -439,6 +439,16 @@
 <span id="439">439</span>
 <span id="440">440</span>
 <span id="441">441</span>
+<span id="442">442</span>
+<span id="443">443</span>
+<span id="444">444</span>
+<span id="445">445</span>
+<span id="446">446</span>
+<span id="447">447</span>
+<span id="448">448</span>
+<span id="449">449</span>
+<span id="450">450</span>
+<span id="451">451</span>
 </pre><pre class="rust"><code><span class="doccomment">//! Exports parse functions related to segments/grapheme clusters.</span>
 
 <span class="kw">mod</span> <span class="ident">tag</span>;
@@ -716,7 +726,17 @@
     <span class="ident">input</span>.<span class="ident">split_at_position1_complete</span>(<span class="op">|</span><span class="ident">item</span><span class="op">|</span> <span class="op">!</span><span class="ident">item</span>.<span class="ident">is_space</span>(), <span class="ident">ErrorKind::Space</span>)
 }
 
-<span class="doccomment">/// Recognizes one linefeed (`&#39;\n&#39;`) ASCII character.</span>
+<span class="doccomment">/// Recognizes one tab (`&quot;\t&quot;`) ASCII character.</span>
+<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">tab</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">E</span><span class="op">&gt;</span>(<span class="ident">input</span>: <span class="ident">T</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">nom::IResult</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">T::Item</span>, <span class="ident">E</span><span class="op">&gt;</span>
+<span class="kw">where</span>
+    <span class="ident">T</span>: <span class="ident">nom::InputIter</span> <span class="op">+</span> <span class="ident">nom::InputLength</span> <span class="op">+</span> <span class="ident">nom::InputTake</span>,
+    <span class="kw">for</span><span class="op">&lt;</span><span class="lifetime">&#39;tok</span><span class="op">&gt;</span> <span class="ident">T::Item</span>: <span class="ident">PartialEq</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;tok</span> <span class="ident">str</span><span class="op">&gt;</span>,
+    <span class="ident">E</span>: <span class="ident">ParseError</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
+{
+    <span class="ident">segment</span>(<span class="string">&quot;\t&quot;</span>)(<span class="ident">input</span>)
+}
+
+<span class="doccomment">/// Recognizes one linefeed (`&quot;\n&quot;`) ASCII character.</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">newline</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">E</span><span class="op">&gt;</span>(<span class="ident">input</span>: <span class="ident">T</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">nom::IResult</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="ident">T::Item</span>, <span class="ident">E</span><span class="op">&gt;</span>
 <span class="kw">where</span>
     <span class="ident">T</span>: <span class="ident">nom::InputIter</span> <span class="op">+</span> <span class="ident">nom::InputLength</span> <span class="op">+</span> <span class="ident">nom::InputTake</span>,
