@@ -6,6 +6,7 @@ use crate::LocatedSegment;
 use nom::{
     error::{ErrorKind, ParseError},
     FindToken,
+    InputIter,
 };
 pub use tag::Tag;
 
@@ -419,5 +420,22 @@ where
                 Err(nom::Err::Error(E::from_error_kind(input, ErrorKind::Eof)))
             },
         }
+    }
+}
+
+/// Recognizes a character that satifies the given `condition` function.
+pub fn satisfy<F, T, E>(
+    mut condition: F,
+) -> impl FnMut(T) -> nom::IResult<T, T::Item, E>
+where
+    for<'item> F: FnMut(&'item T::Item) -> bool,
+    T: nom::InputTake + nom::InputIter,
+    E: ParseError<T>,
+{
+    move |input| match input.iter_elements().next() {
+        Some(elem) if condition(&elem) => Ok((input.take(1), elem)),
+        _ => {
+            Err(nom::Err::Error(E::from_error_kind(input, ErrorKind::Satisfy)))
+        },
     }
 }
