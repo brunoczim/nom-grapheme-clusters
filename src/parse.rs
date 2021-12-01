@@ -275,7 +275,17 @@ where
     input.split_at_position1_complete(|item| !item.is_space(), ErrorKind::Space)
 }
 
-/// Recognizes one linefeed (`'\n'`) ASCII character.
+/// Recognizes one tab (`"\t"`) ASCII character.
+pub fn tab<T, E>(input: T) -> nom::IResult<T, T::Item, E>
+where
+    T: nom::InputIter + nom::InputLength + nom::InputTake,
+    for<'tok> T::Item: PartialEq<&'tok str>,
+    E: ParseError<T>,
+{
+    segment("\t")(input)
+}
+
+/// Recognizes one linefeed (`"\n"`) ASCII character.
 pub fn newline<T, E>(input: T) -> nom::IResult<T, T::Item, E>
 where
     T: nom::InputIter + nom::InputLength + nom::InputTake,
