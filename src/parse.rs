@@ -6,7 +6,6 @@ use crate::LocatedSegment;
 use nom::{
     error::{ErrorKind, ParseError},
     FindToken,
-    InputIter,
 };
 pub use tag::Tag;
 
@@ -298,7 +297,8 @@ where
 /// Recognizes the sequence `"\r\n"`.
 pub fn crlf<T, E>(input: T) -> nom::IResult<T, T, E>
 where
-    for<'slice, 'seg> T: nom::InputTake + nom::Compare<Tag<'slice, 'seg>>,
+    T: nom::InputTake,
+    for<'slice, 'seg> T: nom::Compare<Tag<'slice, 'seg>>,
     E: ParseError<T>,
 {
     match Tag(&["\r", "\n"]).into_fn::<_, nom::error::Error<T>>()(input) {
@@ -311,7 +311,8 @@ where
 /// Parses line ending, either a linefeed or a `"\r\n"` sequence.
 pub fn line_ending<T, E>(input: T) -> nom::IResult<T, T, E>
 where
-    for<'slice, 'seg> T: nom::InputTake + nom::Compare<Tag<'slice, 'seg>>,
+    T: nom::InputTake,
+    for<'slice, 'seg> T: nom::Compare<Tag<'slice, 'seg>>,
     E: ParseError<T>,
 {
     match input.compare(Tag(&["\n"])) {
@@ -321,6 +322,26 @@ where
             Err(nom::Err::Error(E::from_error_kind(input, ErrorKind::CrLf)))
         },
     }
+}
+
+/// Parses segments until a line ending (`"\n"` or `"\r\n"`) is found.
+pub fn not_line_ending<T, E>(input: T) -> nom::IResult<T, T, E>
+where
+    T: nom::InputTake + nom::InputIter,
+    for<'tok> T::Item: PartialEq<&'tok str>,
+    E: ParseError<T>,
+{
+    let mut previous_car = false;
+
+    for (i, segment) in input.iter_indices() {
+        if segment == "\n" {
+            let split_index = i - 1 - usize::from(previous_car);
+            return Ok(input.take_split(split_index));
+        }
+        previous_car = segment == "\r";
+    }
+
+    Err(nom::Err::Error(E::from_error_kind(input, ErrorKind::Tag)))
 }
 
 /// Recognizes the given grapheme cluster/segment.
