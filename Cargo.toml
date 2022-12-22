@@ -2,8 +2,9 @@
 name = "nom-grapheme-clusters"
 version = "0.1.0"
 edition = "2021"
-license = "GPLv3"
+description = "Adapter that allows nom to account for unicode grapheme clusters."
 license-file = "LICENSE"
+repository = "https://github.com/brunoczim/nom-grapheme-clusters/"
 
 [dependencies]
 unicode-segmentation = "^1.10"
