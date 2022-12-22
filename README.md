@@ -1,13 +1,13 @@
 # nom-grapheme-clusters
 
-A library that adds support to strings for (`nom`)[https://crates.io/crates/nom]
+A library that adds support to strings for [`nom`](https://crates.io/crates/nom)
 such that:
 
 1. An "element" of such string is a grapheme cluster/segment, not a byte nor an
     UTF-8 character. A grapheme cluster is a sequence of one or more characters
     such that they are displayed as what a human would feel like a single
-    character should be. For instance, `"m̤̊"` is a single grapheme cluster,
-    although it looks like a single written character.
+    character should be. For instance, `"m̤̊"` is a single grapheme cluster, but
+    not a single character although it looks like a single written character.
 
 2. Grapheme clusters location at the input string (i.e. the "source code") are
     tracked by their absolute position, line and column. All of the three data
