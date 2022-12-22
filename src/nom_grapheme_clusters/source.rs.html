@@ -1,102 +1,102 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src&#x2F;source.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>source.rs - source</title><link rel="stylesheet" type="text/css" href="../../normalize.css"><link rel="stylesheet" type="text/css" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../ayu.css" disabled ><script id="default-settings" ></script><script src="../../storage.js"></script><script src="../../crates.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"><style type="text/css">#crate-search{background-image:url("../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../../nom_grapheme_clusters/index.html'><div class='logo-container rust-logo'><img src='../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../../wheel.svg"></a></div></form></nav><section id="main" class="content"><div class="example-wrap"><pre class="line-numbers"><span id="1">  1</span>
-<span id="2">  2</span>
-<span id="3">  3</span>
-<span id="4">  4</span>
-<span id="5">  5</span>
-<span id="6">  6</span>
-<span id="7">  7</span>
-<span id="8">  8</span>
-<span id="9">  9</span>
-<span id="10"> 10</span>
-<span id="11"> 11</span>
-<span id="12"> 12</span>
-<span id="13"> 13</span>
-<span id="14"> 14</span>
-<span id="15"> 15</span>
-<span id="16"> 16</span>
-<span id="17"> 17</span>
-<span id="18"> 18</span>
-<span id="19"> 19</span>
-<span id="20"> 20</span>
-<span id="21"> 21</span>
-<span id="22"> 22</span>
-<span id="23"> 23</span>
-<span id="24"> 24</span>
-<span id="25"> 25</span>
-<span id="26"> 26</span>
-<span id="27"> 27</span>
-<span id="28"> 28</span>
-<span id="29"> 29</span>
-<span id="30"> 30</span>
-<span id="31"> 31</span>
-<span id="32"> 32</span>
-<span id="33"> 33</span>
-<span id="34"> 34</span>
-<span id="35"> 35</span>
-<span id="36"> 36</span>
-<span id="37"> 37</span>
-<span id="38"> 38</span>
-<span id="39"> 39</span>
-<span id="40"> 40</span>
-<span id="41"> 41</span>
-<span id="42"> 42</span>
-<span id="43"> 43</span>
-<span id="44"> 44</span>
-<span id="45"> 45</span>
-<span id="46"> 46</span>
-<span id="47"> 47</span>
-<span id="48"> 48</span>
-<span id="49"> 49</span>
-<span id="50"> 50</span>
-<span id="51"> 51</span>
-<span id="52"> 52</span>
-<span id="53"> 53</span>
-<span id="54"> 54</span>
-<span id="55"> 55</span>
-<span id="56"> 56</span>
-<span id="57"> 57</span>
-<span id="58"> 58</span>
-<span id="59"> 59</span>
-<span id="60"> 60</span>
-<span id="61"> 61</span>
-<span id="62"> 62</span>
-<span id="63"> 63</span>
-<span id="64"> 64</span>
-<span id="65"> 65</span>
-<span id="66"> 66</span>
-<span id="67"> 67</span>
-<span id="68"> 68</span>
-<span id="69"> 69</span>
-<span id="70"> 70</span>
-<span id="71"> 71</span>
-<span id="72"> 72</span>
-<span id="73"> 73</span>
-<span id="74"> 74</span>
-<span id="75"> 75</span>
-<span id="76"> 76</span>
-<span id="77"> 77</span>
-<span id="78"> 78</span>
-<span id="79"> 79</span>
-<span id="80"> 80</span>
-<span id="81"> 81</span>
-<span id="82"> 82</span>
-<span id="83"> 83</span>
-<span id="84"> 84</span>
-<span id="85"> 85</span>
-<span id="86"> 86</span>
-<span id="87"> 87</span>
-<span id="88"> 88</span>
-<span id="89"> 89</span>
-<span id="90"> 90</span>
-<span id="91"> 91</span>
-<span id="92"> 92</span>
-<span id="93"> 93</span>
-<span id="94"> 94</span>
-<span id="95"> 95</span>
-<span id="96"> 96</span>
-<span id="97"> 97</span>
-<span id="98"> 98</span>
-<span id="99"> 99</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source of the Rust file `src/source.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>source.rs - source</title><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Regular.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../FiraSans-Medium.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Regular.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceSerif4-Bold.ttf.woff2"><link rel="preload" as="font" type="font/woff2" crossorigin href="../../SourceCodePro-Semibold.ttf.woff2"><link rel="stylesheet" href="../../normalize.css"><link rel="stylesheet" href="../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" href="../../ayu.css" disabled><link rel="stylesheet" href="../../dark.css" disabled><link rel="stylesheet" href="../../light.css" id="themeStyle"><script id="default-settings" ></script><script src="../../storage.js"></script><script defer src="../../source-script.js"></script><script defer src="../../source-files.js"></script><script defer src="../../main.js"></script><noscript><link rel="stylesheet" href="../../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../../favicon.svg"></head><body class="rustdoc source"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"></nav><main><div class="width-limiter"><nav class="sub"><a class="sub-logo-container" href="../../nom_grapheme_clusters/index.html"><img class="rust-logo" src="../../rust-logo.svg" alt="logo"></a><form class="search-form"><span></span><input class="search-input" name="search" autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"><div id="help-button" title="help" tabindex="-1"><a href="../../help.html">?</a></div><div id="settings-menu" tabindex="-1"><a href="../../settings.html" title="settings"><img width="22" height="22" alt="Change settings" src="../../wheel.svg"></a></div></form></nav><section id="main-content" class="content"><div class="example-wrap"><pre class="src-line-numbers"><span id="1">1</span>
+<span id="2">2</span>
+<span id="3">3</span>
+<span id="4">4</span>
+<span id="5">5</span>
+<span id="6">6</span>
+<span id="7">7</span>
+<span id="8">8</span>
+<span id="9">9</span>
+<span id="10">10</span>
+<span id="11">11</span>
+<span id="12">12</span>
+<span id="13">13</span>
+<span id="14">14</span>
+<span id="15">15</span>
+<span id="16">16</span>
+<span id="17">17</span>
+<span id="18">18</span>
+<span id="19">19</span>
+<span id="20">20</span>
+<span id="21">21</span>
+<span id="22">22</span>
+<span id="23">23</span>
+<span id="24">24</span>
+<span id="25">25</span>
+<span id="26">26</span>
+<span id="27">27</span>
+<span id="28">28</span>
+<span id="29">29</span>
+<span id="30">30</span>
+<span id="31">31</span>
+<span id="32">32</span>
+<span id="33">33</span>
+<span id="34">34</span>
+<span id="35">35</span>
+<span id="36">36</span>
+<span id="37">37</span>
+<span id="38">38</span>
+<span id="39">39</span>
+<span id="40">40</span>
+<span id="41">41</span>
+<span id="42">42</span>
+<span id="43">43</span>
+<span id="44">44</span>
+<span id="45">45</span>
+<span id="46">46</span>
+<span id="47">47</span>
+<span id="48">48</span>
+<span id="49">49</span>
+<span id="50">50</span>
+<span id="51">51</span>
+<span id="52">52</span>
+<span id="53">53</span>
+<span id="54">54</span>
+<span id="55">55</span>
+<span id="56">56</span>
+<span id="57">57</span>
+<span id="58">58</span>
+<span id="59">59</span>
+<span id="60">60</span>
+<span id="61">61</span>
+<span id="62">62</span>
+<span id="63">63</span>
+<span id="64">64</span>
+<span id="65">65</span>
+<span id="66">66</span>
+<span id="67">67</span>
+<span id="68">68</span>
+<span id="69">69</span>
+<span id="70">70</span>
+<span id="71">71</span>
+<span id="72">72</span>
+<span id="73">73</span>
+<span id="74">74</span>
+<span id="75">75</span>
+<span id="76">76</span>
+<span id="77">77</span>
+<span id="78">78</span>
+<span id="79">79</span>
+<span id="80">80</span>
+<span id="81">81</span>
+<span id="82">82</span>
+<span id="83">83</span>
+<span id="84">84</span>
+<span id="85">85</span>
+<span id="86">86</span>
+<span id="87">87</span>
+<span id="88">88</span>
+<span id="89">89</span>
+<span id="90">90</span>
+<span id="91">91</span>
+<span id="92">92</span>
+<span id="93">93</span>
+<span id="94">94</span>
+<span id="95">95</span>
+<span id="96">96</span>
+<span id="97">97</span>
+<span id="98">98</span>
+<span id="99">99</span>
 <span id="100">100</span>
 <span id="101">101</span>
 <span id="102">102</span>
@@ -249,258 +249,256 @@
 <span id="249">249</span>
 <span id="250">250</span>
 <span id="251">251</span>
-</pre><pre class="rust"><code><span class="doccomment">//! Exports source code object and related items.</span>
+</pre><pre class="rust"><code><span class="doccomment">//! Exports source code object and related items.
 
-<span class="kw">mod</span> <span class="ident">indexing</span>;
+</span><span class="kw">mod </span>indexing;
 
-<span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
-<span class="kw">mod</span> <span class="ident">test</span>;
+<span class="attribute">#[cfg(test)]
+</span><span class="kw">mod </span>test;
 
-<span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">location::Location</span>, <span class="ident">span::Span</span>};
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">indexing::SourceIndex</span>;
-<span class="kw">use</span> <span class="ident">indexing</span>::{<span class="ident">IndexArray</span>, <span class="ident">IndexArrayBuilder</span>, <span class="ident">IndexArrayIter</span>};
-<span class="kw">use</span> <span class="ident">std</span>::{
-    <span class="ident">cmp::Ordering</span>,
-    <span class="ident">fmt</span>,
-    <span class="ident">hash</span>::{<span class="ident">Hash</span>, <span class="ident">Hasher</span>},
-    <span class="ident">ops::Index</span>,
-    <span class="ident">sync::Arc</span>,
+<span class="kw">use crate</span>::{location::Location, span::Span};
+<span class="kw">pub use </span>indexing::SourceIndex;
+<span class="kw">use </span>indexing::{IndexArray, IndexArrayBuilder, IndexArrayIter};
+<span class="kw">use </span>std::{
+    cmp::Ordering,
+    fmt,
+    hash::{Hash, Hasher},
+    ops::Index,
+    sync::Arc,
 };
-<span class="kw">use</span> <span class="ident">unicode_segmentation::UnicodeSegmentation</span>;
+<span class="kw">use </span>unicode_segmentation::UnicodeSegmentation;
 
-<span class="attribute">#[<span class="ident">doc</span>(<span class="ident">hidden</span>)]</span>
-<span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">count_grapheme_clusters</span>(<span class="ident">input</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
-    <span class="ident">input</span>.<span class="ident">graphemes</span>(<span class="bool-val">true</span>).<span class="ident">count</span>()
+<span class="attribute">#[doc(hidden)]
+</span><span class="kw">pub fn </span>count_grapheme_clusters(input: <span class="kw-2">&amp;</span>str) -&gt; usize {
+    input.graphemes(<span class="bool-val">true</span>).count()
 }
 
-<span class="doccomment">/// Inner structure of a source.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
-<span class="kw">struct</span> <span class="ident">SourceInner</span> {
-    <span class="doccomment">/// File name.</span>
-    <span class="ident">name</span>: <span class="ident">Box</span><span class="op">&lt;</span><span class="ident">str</span><span class="op">&gt;</span>,
-    <span class="doccomment">/// Contents of the source.</span>
-    <span class="ident">contents</span>: <span class="ident">Box</span><span class="op">&lt;</span><span class="ident">str</span><span class="op">&gt;</span>,
-    <span class="doccomment">/// List of string segmentation in the source.</span>
-    <span class="ident">segments</span>: <span class="ident">IndexArray</span>,
-    <span class="doccomment">/// List of newlines in the source.</span>
-    <span class="ident">newlines</span>: <span class="ident">IndexArray</span>,
+<span class="doccomment">/// Inner structure of a source.
+</span><span class="attribute">#[derive(Debug)]
+</span><span class="kw">struct </span>SourceInner {
+    <span class="doccomment">/// File name.
+    </span>name: Box&lt;str&gt;,
+    <span class="doccomment">/// Contents of the source.
+    </span>contents: Box&lt;str&gt;,
+    <span class="doccomment">/// List of string segmentation in the source.
+    </span>segments: IndexArray,
+    <span class="doccomment">/// List of newlines in the source.
+    </span>newlines: IndexArray,
 }
 
-<span class="doccomment">/// A source code object, such as read from a file. Cloning this object results</span>
-<span class="doccomment">/// in simply incrementing a reference counter, thus sharing the source code</span>
-<span class="doccomment">/// object.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Clone</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Source</span> {
-    <span class="doccomment">/// The inner structure containing the actual data.</span>
-    <span class="ident">inner</span>: <span class="ident">Arc</span><span class="op">&lt;</span><span class="ident">SourceInner</span><span class="op">&gt;</span>,
+<span class="doccomment">/// A source code object, such as read from a file. Cloning this object results
+/// in simply incrementing a reference counter, thus sharing the source code
+/// object.
+</span><span class="attribute">#[derive(Debug, Clone)]
+</span><span class="kw">pub struct </span>Source {
+    <span class="doccomment">/// The inner structure containing the actual data.
+    </span>inner: Arc&lt;SourceInner&gt;,
 }
 
-<span class="kw">impl</span> <span class="ident">Source</span> {
-    <span class="doccomment">/// Creates a new source code object given its name and its contents.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// Contents are rearranged as grapheme clusters.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span><span class="op">&lt;</span><span class="ident">S0</span>, <span class="ident">S1</span><span class="op">&gt;</span>(<span class="ident">name</span>: <span class="ident">S0</span>, <span class="ident">contents</span>: <span class="ident">S1</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span>
-    <span class="kw">where</span>
-        <span class="ident">S0</span>: <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">Box</span><span class="op">&lt;</span><span class="ident">str</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-        <span class="ident">S1</span>: <span class="ident">Into</span><span class="op">&lt;</span><span class="ident">Box</span><span class="op">&lt;</span><span class="ident">str</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+<span class="kw">impl </span>Source {
+    <span class="doccomment">/// Creates a new source code object given its name and its contents.
+    ///
+    /// Contents are rearranged as grapheme clusters.
+    </span><span class="kw">pub fn </span>new&lt;S0, S1&gt;(name: S0, contents: S1) -&gt; <span class="self">Self
+    </span><span class="kw">where
+        </span>S0: Into&lt;Box&lt;str&gt;&gt;,
+        S1: Into&lt;Box&lt;str&gt;&gt;,
     {
-        <span class="kw">let</span> <span class="ident">name</span> <span class="op">=</span> <span class="ident">name</span>.<span class="ident">into</span>();
-        <span class="kw">let</span> <span class="ident">contents</span> <span class="op">=</span> <span class="ident">contents</span>.<span class="ident">into</span>();
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">segments</span> <span class="op">=</span> <span class="ident">IndexArrayBuilder::new</span>();
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">newlines</span> <span class="op">=</span> <span class="ident">IndexArrayBuilder::new</span>();
+        <span class="kw">let </span>name = name.into();
+        <span class="kw">let </span>contents = contents.into();
+        <span class="kw">let </span><span class="kw-2">mut </span>segments = IndexArrayBuilder::new();
+        <span class="kw">let </span><span class="kw-2">mut </span>newlines = IndexArrayBuilder::new();
 
-        <span class="kw">for</span> (<span class="ident">idx</span>, <span class="ident">grapheme</span>) <span class="kw">in</span> <span class="ident">contents</span>.<span class="ident">grapheme_indices</span>(<span class="bool-val">true</span>) {
-            <span class="kw">if</span> <span class="ident">grapheme</span> <span class="op">=</span><span class="op">=</span> <span class="string">&quot;\n&quot;</span> {
-                <span class="ident">newlines</span>.<span class="ident">push</span>(<span class="ident">segments</span>.<span class="ident">len</span>());
+        <span class="kw">for </span>(idx, grapheme) <span class="kw">in </span>contents.grapheme_indices(<span class="bool-val">true</span>) {
+            <span class="kw">if </span>grapheme == <span class="string">&quot;\n&quot; </span>{
+                newlines.push(segments.len());
             }
-            <span class="ident">segments</span>.<span class="ident">push</span>(<span class="ident">idx</span>);
+            segments.push(idx);
         }
-        <span class="ident">segments</span>.<span class="ident">push</span>(<span class="ident">contents</span>.<span class="ident">len</span>());
+        segments.push(contents.len());
 
-        <span class="kw">let</span> <span class="ident">segments</span> <span class="op">=</span> <span class="ident">segments</span>.<span class="ident">into</span>();
-        <span class="kw">let</span> <span class="ident">newlines</span> <span class="op">=</span> <span class="ident">newlines</span>.<span class="ident">into</span>();
-        <span class="kw">let</span> <span class="ident">inner</span> <span class="op">=</span> <span class="ident">SourceInner</span> { <span class="ident">name</span>, <span class="ident">contents</span>, <span class="ident">segments</span>, <span class="ident">newlines</span> };
-        <span class="self">Self</span> { <span class="ident">inner</span>: <span class="ident">Arc::new</span>(<span class="ident">inner</span>) }
+        <span class="kw">let </span>segments = segments.into();
+        <span class="kw">let </span>newlines = newlines.into();
+        <span class="kw">let </span>inner = SourceInner { name, contents, segments, newlines };
+        <span class="self">Self </span>{ inner: Arc::new(inner) }
     }
 
-    <span class="doccomment">/// The (file) name of the source.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">name</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">str</span> {
-        <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">name</span>
+    <span class="doccomment">/// The (file) name of the source.
+    </span><span class="kw">pub fn </span>name(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>str {
+        <span class="kw-2">&amp;</span><span class="self">self</span>.inner.name
     }
 
-    <span class="doccomment">/// The length the source.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">len</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
-        <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">segments</span>.<span class="ident">len</span>() <span class="op">-</span> <span class="number">1</span>
+    <span class="doccomment">/// The length the source.
+    </span><span class="kw">pub fn </span>len(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; usize {
+        <span class="self">self</span>.inner.segments.len() - <span class="number">1
+    </span>}
+
+    <span class="doccomment">/// The contentss of the source.
+    </span><span class="kw">pub fn </span>contents(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; <span class="kw-2">&amp;</span>str {
+        <span class="kw-2">&amp;</span><span class="self">self</span>.inner.contents
     }
 
-    <span class="doccomment">/// The contentss of the source.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">contents</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">str</span> {
-        <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">contents</span>
+    <span class="doccomment">/// Iterator over the segment indices of the source, where indices are in
+    /// terms of bytes.
+    </span><span class="kw">pub fn </span>seg_byte_indices(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; SegmentByteIndices {
+        SegmentByteIndices { inner: <span class="self">self</span>.inner.segments.iter() }
     }
 
-    <span class="doccomment">/// Iterator over the segment indices of the source, where indices are in</span>
-    <span class="doccomment">/// terms of bytes.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">seg_byte_indices</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">SegmentByteIndices</span> {
-        <span class="ident">SegmentByteIndices</span> { <span class="ident">inner</span>: <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">segments</span>.<span class="ident">iter</span>() }
+    <span class="doccomment">/// Iterator over the newline indices of the source, where indices are in
+    /// terms of segments/grapheme clusters.
+    </span><span class="kw">pub fn </span>newline_indices(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; NewlineIndices {
+        NewlineIndices { inner: <span class="self">self</span>.inner.segments.iter() }
     }
 
-    <span class="doccomment">/// Iterator over the newline indices of the source, where indices are in</span>
-    <span class="doccomment">/// terms of segments/grapheme clusters.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">newline_indices</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">NewlineIndices</span> {
-        <span class="ident">NewlineIndices</span> { <span class="ident">inner</span>: <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">segments</span>.<span class="ident">iter</span>() }
-    }
-
-    <span class="doccomment">/// Returns the line number where the given position is contained, starting</span>
-    <span class="doccomment">/// from `0`.</span>
-    <span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn</span> <span class="ident">line</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">position</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
-        <span class="kw">match</span> <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">newlines</span>.<span class="ident">binary_search</span>(<span class="ident">position</span>) {
-            <span class="prelude-val">Ok</span>(<span class="ident">n</span>) <span class="op">|</span> <span class="prelude-val">Err</span>(<span class="ident">n</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">n</span>,
-        }
-    }
-
-    <span class="doccomment">/// Returns the position of the given line number&#39;s start. Line number</span>
-    <span class="doccomment">/// begins at `0`.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// # Panics</span>
-    <span class="doccomment">/// Pancis if the given line does not exist.</span>
-    <span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn</span> <span class="ident">line_start</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">line</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">usize</span> {
-        <span class="kw">if</span> <span class="ident">line</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
-            <span class="number">0</span>
-        } <span class="kw">else</span> {
-            <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">newlines</span>.<span class="ident">index</span>(<span class="ident">line</span> <span class="op">-</span> <span class="number">1</span>) <span class="op">+</span> <span class="number">1</span>
+    <span class="doccomment">/// Returns the line number where the given position is contained, starting
+    /// from `0`.
+    </span><span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn </span>line(<span class="kw-2">&amp;</span><span class="self">self</span>, position: usize) -&gt; usize {
+        <span class="kw">match </span><span class="self">self</span>.inner.newlines.binary_search(position) {
+            <span class="prelude-val">Ok</span>(n) | <span class="prelude-val">Err</span>(n) =&gt; n,
         }
     }
 
-    <span class="doccomment">/// Returns the position of the given line number&#39;s start. Line number</span>
-    <span class="doccomment">/// begins at `0`, returning `None` on invalid line number.</span>
-    <span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn</span> <span class="ident">try_line_start</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">line</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
-        <span class="kw">if</span> <span class="ident">line</span> <span class="op">=</span><span class="op">=</span> <span class="number">0</span> {
+    <span class="doccomment">/// Returns the position of the given line number&#39;s start. Line number
+    /// begins at `0`.
+    ///
+    /// # Panics
+    /// Pancis if the given line does not exist.
+    </span><span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn </span>line_start(<span class="kw-2">&amp;</span><span class="self">self</span>, line: usize) -&gt; usize {
+        <span class="kw">if </span>line == <span class="number">0 </span>{
+            <span class="number">0
+        </span>} <span class="kw">else </span>{
+            <span class="self">self</span>.inner.newlines.index(line - <span class="number">1</span>) + <span class="number">1
+        </span>}
+    }
+
+    <span class="doccomment">/// Returns the position of the given line number&#39;s start. Line number
+    /// begins at `0`, returning `None` on invalid line number.
+    </span><span class="kw">pub</span>(<span class="kw">super</span>) <span class="kw">fn </span>try_line_start(<span class="kw-2">&amp;</span><span class="self">self</span>, line: usize) -&gt; <span class="prelude-ty">Option</span>&lt;usize&gt; {
+        <span class="kw">if </span>line == <span class="number">0 </span>{
             <span class="prelude-val">Some</span>(<span class="number">0</span>)
-        } <span class="kw">else</span> {
-            <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">newlines</span>.<span class="ident">get</span>(<span class="ident">line</span> <span class="op">-</span> <span class="number">1</span>).<span class="ident">map</span>(<span class="op">|</span><span class="ident">position</span><span class="op">|</span> <span class="ident">position</span> <span class="op">+</span> <span class="number">1</span>)
+        } <span class="kw">else </span>{
+            <span class="self">self</span>.inner.newlines.get(line - <span class="number">1</span>).map(|position| position + <span class="number">1</span>)
         }
     }
 
-    <span class="doccomment">/// Indexes this source. It can be a single `usize` or a range of `usize`.</span>
-    <span class="doccomment">/// Indices are given in terms of grapheme clusters/segments.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">indexer</span>: <span class="ident">I</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">I::Output</span><span class="op">&gt;</span>
-    <span class="kw">where</span>
-        <span class="ident">I</span>: <span class="ident">SourceIndex</span>,
+    <span class="doccomment">/// Indexes this source. It can be a single `usize` or a range of `usize`.
+    /// Indices are given in terms of grapheme clusters/segments.
+    </span><span class="kw">pub fn </span>get&lt;I&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, indexer: I) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="kw-2">&amp;</span>I::Output&gt;
+    <span class="kw">where
+        </span>I: SourceIndex,
     {
-        <span class="ident">indexer</span>.<span class="ident">get</span>(<span class="self">self</span>)
+        indexer.get(<span class="self">self</span>)
     }
 
-    <span class="doccomment">/// Returns a span covering the whole source code.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">full_span</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Span</span> {
-        <span class="kw">let</span> <span class="ident">start</span> <span class="op">=</span> <span class="ident">Location::new_unchecked</span>(<span class="self">self</span>.<span class="ident">clone</span>(), <span class="number">0</span>);
-        <span class="ident">Span::new_unchecked</span>(<span class="ident">start</span>, <span class="self">self</span>.<span class="ident">len</span>())
+    <span class="doccomment">/// Returns a span covering the whole source code.
+    </span><span class="kw">pub fn </span>full_span(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; Span {
+        <span class="kw">let </span>start = Location::new_unchecked(<span class="self">self</span>.clone(), <span class="number">0</span>);
+        Span::new_unchecked(start, <span class="self">self</span>.len())
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span> <span class="ident">Index</span><span class="op">&lt;</span><span class="ident">I</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">Source</span>
-<span class="kw">where</span>
-    <span class="ident">I</span>: <span class="ident">SourceIndex</span>,
+<span class="kw">impl</span>&lt;I&gt; Index&lt;I&gt; <span class="kw">for </span>Source
+<span class="kw">where
+    </span>I: SourceIndex,
 {
-    <span class="kw">type</span> <span class="ident">Output</span> <span class="op">=</span> <span class="ident">I::Output</span>;
+    <span class="kw">type </span>Output = I::Output;
 
-    <span class="kw">fn</span> <span class="ident">index</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">indexer</span>: <span class="ident">I</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident"><span class="self">Self</span>::Output</span> {
-        <span class="ident">indexer</span>.<span class="ident">index</span>(<span class="self">self</span>)
+    <span class="kw">fn </span>index(<span class="kw-2">&amp;</span><span class="self">self</span>, indexer: I) -&gt; <span class="kw-2">&amp;</span><span class="self">Self</span>::Output {
+        indexer.index(<span class="self">self</span>)
     }
 }
 
-<span class="kw">impl</span> <span class="ident">PartialEq</span> <span class="kw">for</span> <span class="ident">Source</span> {
-    <span class="kw">fn</span> <span class="ident">eq</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
-        <span class="ident">Arc::ptr_eq</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">inner</span>, <span class="kw-2">&amp;</span><span class="ident">other</span>.<span class="ident">inner</span>)
+<span class="kw">impl </span>PartialEq <span class="kw">for </span>Source {
+    <span class="kw">fn </span>eq(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; bool {
+        Arc::ptr_eq(<span class="kw-2">&amp;</span><span class="self">self</span>.inner, <span class="kw-2">&amp;</span>other.inner)
     }
 }
 
-<span class="kw">impl</span> <span class="ident">Eq</span> <span class="kw">for</span> <span class="ident">Source</span> {}
+<span class="kw">impl </span>Eq <span class="kw">for </span>Source {}
 
-<span class="kw">impl</span> <span class="ident">PartialOrd</span> <span class="kw">for</span> <span class="ident">Source</span> {
-    <span class="kw">fn</span> <span class="ident">partial_cmp</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Ordering</span><span class="op">&gt;</span> {
-        <span class="prelude-val">Some</span>(<span class="self">self</span>.<span class="ident">cmp</span>(<span class="ident">other</span>))
+<span class="kw">impl </span>PartialOrd <span class="kw">for </span>Source {
+    <span class="kw">fn </span>partial_cmp(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;Ordering&gt; {
+        <span class="prelude-val">Some</span>(<span class="self">self</span>.cmp(other))
     }
 }
 
-<span class="kw">impl</span> <span class="ident">Ord</span> <span class="kw">for</span> <span class="ident">Source</span> {
-    <span class="kw">fn</span> <span class="ident">cmp</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">other</span>: <span class="kw-2">&amp;</span><span class="self">Self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Ordering</span> {
-        (<span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="self">self</span>.<span class="ident">inner</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">SourceInner</span>).<span class="ident">cmp</span>(<span class="kw-2">&amp;</span>(<span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="ident">other</span>.<span class="ident">inner</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="kw">_</span>))
+<span class="kw">impl </span>Ord <span class="kw">for </span>Source {
+    <span class="kw">fn </span>cmp(<span class="kw-2">&amp;</span><span class="self">self</span>, other: <span class="kw-2">&amp;</span><span class="self">Self</span>) -&gt; Ordering {
+        (<span class="kw-2">&amp;*</span><span class="self">self</span>.inner <span class="kw">as </span><span class="kw-2">*const </span>SourceInner).cmp(<span class="kw-2">&amp;</span>(<span class="kw-2">&amp;*</span>other.inner <span class="kw">as </span><span class="kw-2">*const </span><span class="kw">_</span>))
     }
 }
 
-<span class="kw">impl</span> <span class="ident">Hash</span> <span class="kw">for</span> <span class="ident">Source</span> {
-    <span class="kw">fn</span> <span class="ident">hash</span><span class="op">&lt;</span><span class="ident">H</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">hasher</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">H</span>)
-    <span class="kw">where</span>
-        <span class="ident">H</span>: <span class="ident">Hasher</span>,
+<span class="kw">impl </span>Hash <span class="kw">for </span>Source {
+    <span class="kw">fn </span>hash&lt;H&gt;(<span class="kw-2">&amp;</span><span class="self">self</span>, hasher: <span class="kw-2">&amp;mut </span>H)
+    <span class="kw">where
+        </span>H: Hasher,
     {
-        (<span class="kw-2">&amp;</span><span class="kw-2">*</span><span class="self">self</span>.<span class="ident">inner</span> <span class="kw">as</span> <span class="kw-2">*</span><span class="kw">const</span> <span class="ident">SourceInner</span>).<span class="ident">hash</span>(<span class="ident">hasher</span>)
+        (<span class="kw-2">&amp;*</span><span class="self">self</span>.inner <span class="kw">as </span><span class="kw-2">*const </span>SourceInner).hash(hasher)
     }
 }
 
-<span class="kw">impl</span> <span class="ident">fmt::Display</span> <span class="kw">for</span> <span class="ident">Source</span> {
-    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">fmtr</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">fmt::Formatter</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">fmt::Result</span> {
-        <span class="ident">fmtr</span>.<span class="ident">write_str</span>(<span class="self">self</span>.<span class="ident">name</span>())
+<span class="kw">impl </span>fmt::Display <span class="kw">for </span>Source {
+    <span class="kw">fn </span>fmt(<span class="kw-2">&amp;</span><span class="self">self</span>, fmtr: <span class="kw-2">&amp;mut </span>fmt::Formatter) -&gt; fmt::Result {
+        fmtr.write_str(<span class="self">self</span>.name())
     }
 }
 
-<span class="doccomment">/// Iterator over the segment indices of a source. Indices are in terms of</span>
-<span class="doccomment">/// bytes. Double-ended and sized.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">SegmentByteIndices</span><span class="op">&lt;</span><span class="lifetime">&#39;src</span><span class="op">&gt;</span> {
-    <span class="doccomment">/// The inner iterator over the indices.</span>
-    <span class="ident">inner</span>: <span class="ident">IndexArrayIter</span><span class="op">&lt;</span><span class="lifetime">&#39;src</span><span class="op">&gt;</span>,
+<span class="doccomment">/// Iterator over the segment indices of a source. Indices are in terms of
+/// bytes. Double-ended and sized.
+</span><span class="attribute">#[derive(Debug)]
+</span><span class="kw">pub struct </span>SegmentByteIndices&lt;<span class="lifetime">&#39;src</span>&gt; {
+    <span class="doccomment">/// The inner iterator over the indices.
+    </span>inner: IndexArrayIter&lt;<span class="lifetime">&#39;src</span>&gt;,
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;src</span><span class="op">&gt;</span> <span class="ident">Iterator</span> <span class="kw">for</span> <span class="ident">SegmentByteIndices</span><span class="op">&lt;</span><span class="lifetime">&#39;src</span><span class="op">&gt;</span> {
-    <span class="kw">type</span> <span class="ident">Item</span> <span class="op">=</span> <span class="ident">usize</span>;
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;src</span>&gt; Iterator <span class="kw">for </span>SegmentByteIndices&lt;<span class="lifetime">&#39;src</span>&gt; {
+    <span class="kw">type </span>Item = usize;
 
-    <span class="kw">fn</span> <span class="ident">next</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">next</span>()
+    <span class="kw">fn </span>next(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Item&gt; {
+        <span class="self">self</span>.inner.next()
     }
 
-    <span class="kw">fn</span> <span class="ident">size_hint</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> (<span class="ident">usize</span>, <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>) {
-        <span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">len</span>();
-        (<span class="ident">len</span>, <span class="prelude-val">Some</span>(<span class="ident">len</span>))
-    }
-}
-
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;src</span><span class="op">&gt;</span> <span class="ident">DoubleEndedIterator</span> <span class="kw">for</span> <span class="ident">SegmentByteIndices</span><span class="op">&lt;</span><span class="lifetime">&#39;src</span><span class="op">&gt;</span> {
-    <span class="kw">fn</span> <span class="ident">next_back</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">next_back</span>()
+    <span class="kw">fn </span>size_hint(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; (usize, <span class="prelude-ty">Option</span>&lt;usize&gt;) {
+        <span class="kw">let </span>len = <span class="self">self</span>.inner.len();
+        (len, <span class="prelude-val">Some</span>(len))
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;array</span><span class="op">&gt;</span> <span class="ident">ExactSizeIterator</span> <span class="kw">for</span> <span class="ident">SegmentByteIndices</span><span class="op">&lt;</span><span class="lifetime">&#39;array</span><span class="op">&gt;</span> {}
-
-<span class="doccomment">/// Iterator over the newline indices of a source. Indices are in term of</span>
-<span class="doccomment">/// segments, not bytes nor characters. Double-ended and sized.</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">NewlineIndices</span><span class="op">&lt;</span><span class="lifetime">&#39;src</span><span class="op">&gt;</span> {
-    <span class="doccomment">/// The inner iterator over the indices.</span>
-    <span class="ident">inner</span>: <span class="ident">IndexArrayIter</span><span class="op">&lt;</span><span class="lifetime">&#39;src</span><span class="op">&gt;</span>,
-}
-
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;src</span><span class="op">&gt;</span> <span class="ident">Iterator</span> <span class="kw">for</span> <span class="ident">NewlineIndices</span><span class="op">&lt;</span><span class="lifetime">&#39;src</span><span class="op">&gt;</span> {
-    <span class="kw">type</span> <span class="ident">Item</span> <span class="op">=</span> <span class="ident">usize</span>;
-
-    <span class="kw">fn</span> <span class="ident">next</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">next</span>()
-    }
-
-    <span class="kw">fn</span> <span class="ident">size_hint</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> (<span class="ident">usize</span>, <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span>) {
-        <span class="kw">let</span> <span class="ident">len</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">len</span>();
-        (<span class="ident">len</span>, <span class="prelude-val">Some</span>(<span class="ident">len</span>))
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;src</span>&gt; DoubleEndedIterator <span class="kw">for </span>SegmentByteIndices&lt;<span class="lifetime">&#39;src</span>&gt; {
+    <span class="kw">fn </span>next_back(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Item&gt; {
+        <span class="self">self</span>.inner.next_back()
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;src</span><span class="op">&gt;</span> <span class="ident">DoubleEndedIterator</span> <span class="kw">for</span> <span class="ident">NewlineIndices</span><span class="op">&lt;</span><span class="lifetime">&#39;src</span><span class="op">&gt;</span> {
-    <span class="kw">fn</span> <span class="ident">next_back</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident"><span class="self">Self</span>::Item</span><span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">inner</span>.<span class="ident">next_back</span>()
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;array</span>&gt; ExactSizeIterator <span class="kw">for </span>SegmentByteIndices&lt;<span class="lifetime">&#39;array</span>&gt; {}
+
+<span class="doccomment">/// Iterator over the newline indices of a source. Indices are in term of
+/// segments, not bytes nor characters. Double-ended and sized.
+</span><span class="attribute">#[derive(Debug)]
+</span><span class="kw">pub struct </span>NewlineIndices&lt;<span class="lifetime">&#39;src</span>&gt; {
+    <span class="doccomment">/// The inner iterator over the indices.
+    </span>inner: IndexArrayIter&lt;<span class="lifetime">&#39;src</span>&gt;,
+}
+
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;src</span>&gt; Iterator <span class="kw">for </span>NewlineIndices&lt;<span class="lifetime">&#39;src</span>&gt; {
+    <span class="kw">type </span>Item = usize;
+
+    <span class="kw">fn </span>next(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Item&gt; {
+        <span class="self">self</span>.inner.next()
+    }
+
+    <span class="kw">fn </span>size_hint(<span class="kw-2">&amp;</span><span class="self">self</span>) -&gt; (usize, <span class="prelude-ty">Option</span>&lt;usize&gt;) {
+        <span class="kw">let </span>len = <span class="self">self</span>.inner.len();
+        (len, <span class="prelude-val">Some</span>(len))
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;array</span><span class="op">&gt;</span> <span class="ident">ExactSizeIterator</span> <span class="kw">for</span> <span class="ident">NewlineIndices</span><span class="op">&lt;</span><span class="lifetime">&#39;array</span><span class="op">&gt;</span> {}
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;src</span>&gt; DoubleEndedIterator <span class="kw">for </span>NewlineIndices&lt;<span class="lifetime">&#39;src</span>&gt; {
+    <span class="kw">fn </span>next_back(<span class="kw-2">&amp;mut </span><span class="self">self</span>) -&gt; <span class="prelude-ty">Option</span>&lt;<span class="self">Self</span>::Item&gt; {
+        <span class="self">self</span>.inner.next_back()
+    }
+}
+
+<span class="kw">impl</span>&lt;<span class="lifetime">&#39;array</span>&gt; ExactSizeIterator <span class="kw">for </span>NewlineIndices&lt;<span class="lifetime">&#39;array</span>&gt; {}
 </code></pre></div>
-</section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../../" data-current-crate="nom_grapheme_clusters" data-search-index-js="../../search-index.js" data-search-js="../../search.js"></div>
-    <script src="../../main.js"></script><script src="../../source-script.js"></script><script src="../../source-files.js"></script>
-</body></html>
+</section></div></main><div id="rustdoc-vars" data-root-path="../../" data-current-crate="nom_grapheme_clusters" data-themes="ayu,dark,light" data-resource-suffix="" data-rustdoc-version="1.66.0 (69f9c33d7 2022-12-12)" ></div></body></html>
