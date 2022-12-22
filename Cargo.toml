@@ -4,5 +4,5 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-unicode-segmentation = "^1.8"
+unicode-segmentation = "^1.10"
 nom = "^7.1"
