@@ -1,6 +1,6 @@
 [package]
 name = "nom-grapheme-clusters"
-version = "0.2.0"
+version = "0.3.0"
 edition = "2021"
 description = "Adapter that allows nom to account for unicode grapheme clusters."
 license-file = "LICENSE"
