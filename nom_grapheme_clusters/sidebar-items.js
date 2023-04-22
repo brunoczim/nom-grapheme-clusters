@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"mod":[["parse","Exports parse functions related to segments/grapheme clusters."],["source","Exports source code object and related items."],["span","This module provides ways of tracking ranges (spans) in the source code."]],"struct":[["LocatedSegment","A grapheme cluster segment with its location in the source code."],["Location","The location in a source code."]]};
+window.SIDEBAR_ITEMS = {"mod":["parse","source","span"],"struct":["LocatedSegment","Location"]};
