@@ -201,13 +201,15 @@ impl fmt::Display for Span {
     }
 }
 
-impl<T> AsRef<T> for Span
-where
-    T: ?Sized,
-    str: AsRef<T>,
-{
-    fn as_ref(&self) -> &T {
-        self.as_str().as_ref()
+impl AsRef<Self> for Span {
+    fn as_ref(&self) -> &Self {
+        self
+    }
+}
+
+impl AsRef<str> for Span {
+    fn as_ref(&self) -> &str {
+        self.as_str()
     }
 }
 
@@ -668,13 +670,15 @@ impl PartialEq for SpanContent {
     }
 }
 
-impl<T> PartialEq<T> for SpanContent
-where
-    T: ?Sized,
-    str: PartialEq<T>,
-{
-    fn eq(&self, other: &T) -> bool {
+impl PartialEq<str> for SpanContent {
+    fn eq(&self, other: &str) -> bool {
         &**self == other
+    }
+}
+
+impl<'span> PartialEq<&'span str> for SpanContent {
+    fn eq(&self, other: &&'span str) -> bool {
+        &**self == *other
     }
 }
 
@@ -686,13 +690,15 @@ impl PartialOrd for SpanContent {
     }
 }
 
-impl<T> PartialOrd<T> for SpanContent
-where
-    T: ?Sized,
-    str: PartialOrd<T>,
-{
-    fn partial_cmp(&self, other: &T) -> Option<Ordering> {
+impl PartialOrd<str> for SpanContent {
+    fn partial_cmp(&self, other: &str) -> Option<Ordering> {
         (**self).partial_cmp(other)
+    }
+}
+
+impl<'span> PartialOrd<&'span str> for SpanContent {
+    fn partial_cmp(&self, other: &&'span str) -> Option<Ordering> {
+        (**self).partial_cmp(*other)
     }
 }
 
@@ -711,23 +717,21 @@ impl Hash for SpanContent {
     }
 }
 
-impl<T> AsRef<T> for SpanContent
-where
-    T: ?Sized,
-    str: AsRef<T>,
-{
-    fn as_ref(&self) -> &T {
-        (**self).as_ref()
+impl AsRef<Self> for SpanContent {
+    fn as_ref(&self) -> &Self {
+        self
     }
 }
 
-impl<T> Borrow<T> for SpanContent
-where
-    T: ?Sized,
-    str: Borrow<T>,
-{
-    fn borrow(&self) -> &T {
-        (**self).borrow()
+impl AsRef<str> for SpanContent {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl Borrow<str> for SpanContent {
+    fn borrow(&self) -> &str {
+        self.as_str()
     }
 }
 

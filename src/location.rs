@@ -120,13 +120,15 @@ impl fmt::Display for Location {
     }
 }
 
-impl<T> AsRef<T> for Location
-where
-    T: ?Sized,
-    str: AsRef<T>,
-{
-    fn as_ref(&self) -> &T {
-        self.as_str().as_ref()
+impl AsRef<Self> for Location {
+    fn as_ref(&self) -> &Self {
+        self
+    }
+}
+
+impl AsRef<str> for Location {
+    fn as_ref(&self) -> &str {
+        self.as_str()
     }
 }
 
@@ -247,13 +249,15 @@ impl PartialEq for LocatedSegment {
     }
 }
 
-impl<T> PartialEq<T> for LocatedSegment
-where
-    T: ?Sized,
-    str: PartialEq<T>,
-{
-    fn eq(&self, other: &T) -> bool {
+impl PartialEq<str> for LocatedSegment {
+    fn eq(&self, other: &str) -> bool {
         &**self == other
+    }
+}
+
+impl<'seg> PartialEq<&'seg str> for LocatedSegment {
+    fn eq(&self, other: &&'seg str) -> bool {
+        &*self == other
     }
 }
 
@@ -265,12 +269,14 @@ impl PartialOrd for LocatedSegment {
     }
 }
 
-impl<T> PartialOrd<T> for LocatedSegment
-where
-    T: ?Sized,
-    str: PartialOrd<T>,
-{
-    fn partial_cmp(&self, other: &T) -> Option<Ordering> {
+impl PartialOrd<str> for LocatedSegment {
+    fn partial_cmp(&self, other: &str) -> Option<Ordering> {
+        (**self).partial_cmp(other)
+    }
+}
+
+impl<'seg> PartialOrd<&'seg str> for LocatedSegment {
+    fn partial_cmp(&self, other: &&'seg str) -> Option<Ordering> {
         (**self).partial_cmp(other)
     }
 }
@@ -290,22 +296,20 @@ impl Hash for LocatedSegment {
     }
 }
 
-impl<T> AsRef<T> for LocatedSegment
-where
-    T: ?Sized,
-    str: AsRef<T>,
-{
-    fn as_ref(&self) -> &T {
-        (**self).as_ref()
+impl AsRef<Self> for LocatedSegment {
+    fn as_ref(&self) -> &Self {
+        self
     }
 }
 
-impl<T> Borrow<T> for LocatedSegment
-where
-    T: ?Sized,
-    str: Borrow<T>,
-{
-    fn borrow(&self) -> &T {
-        (**self).borrow()
+impl AsRef<str> for LocatedSegment {
+    fn as_ref(&self) -> &str {
+        self.as_str()
+    }
+}
+
+impl Borrow<str> for LocatedSegment {
+    fn borrow(&self) -> &str {
+        self.as_str()
     }
 }
