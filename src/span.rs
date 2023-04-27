@@ -1020,6 +1020,26 @@ pub struct Symbol<T> {
     pub data: T,
 }
 
+impl<T> Symbol<T> {
+    /// Helper method to make symbol reference to data.
+    pub fn as_ref(&self) -> Symbol<&T> {
+        Symbol { span: self.span.clone(), data: &self.data }
+    }
+
+    /// Helper method to make symbol mutably reference to data.
+    pub fn as_mut(&mut self) -> Symbol<&mut T> {
+        Symbol { span: self.span.clone(), data: &mut self.data }
+    }
+
+    /// Helper method to convert data.
+    pub fn map<F, U>(self, mapper: F) -> Symbol<U>
+    where
+        F: FnOnce(T) -> U,
+    {
+        Symbol { span: self.span, data: mapper(self.data) }
+    }
+}
+
 impl<T> PartialEq for Symbol<T>
 where
     T: PartialEq,
