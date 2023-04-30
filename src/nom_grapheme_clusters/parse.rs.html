@@ -596,18 +596,66 @@
 <a href="#596" id="596">596</a>
 <a href="#597" id="597">597</a>
 <a href="#598" id="598">598</a>
+<a href="#599" id="599">599</a>
+<a href="#600" id="600">600</a>
+<a href="#601" id="601">601</a>
+<a href="#602" id="602">602</a>
+<a href="#603" id="603">603</a>
+<a href="#604" id="604">604</a>
+<a href="#605" id="605">605</a>
+<a href="#606" id="606">606</a>
+<a href="#607" id="607">607</a>
+<a href="#608" id="608">608</a>
+<a href="#609" id="609">609</a>
+<a href="#610" id="610">610</a>
+<a href="#611" id="611">611</a>
+<a href="#612" id="612">612</a>
+<a href="#613" id="613">613</a>
+<a href="#614" id="614">614</a>
+<a href="#615" id="615">615</a>
+<a href="#616" id="616">616</a>
+<a href="#617" id="617">617</a>
+<a href="#618" id="618">618</a>
+<a href="#619" id="619">619</a>
+<a href="#620" id="620">620</a>
+<a href="#621" id="621">621</a>
+<a href="#622" id="622">622</a>
 </pre><pre class="rust"><code><span class="doccomment">//! Exports parse functions related to segments/grapheme clusters.
 
 </span><span class="kw">mod </span>tag;
 
-<span class="kw">use </span><span class="kw">crate</span>::LocatedSegment;
+<span class="kw">use crate</span>::{
+    span::{Spanned, Symbol},
+    LocatedSegment,
+    Span,
+};
 <span class="kw">use </span>nom::{
     combinator::{opt, recognize},
     error::{ErrorKind, ParseError},
     FindToken,
+    Parser,
 };
 <span class="kw">use </span>std::ops::{RangeFrom, RangeTo};
 <span class="kw">pub use </span>tag::Tag;
+
+<span class="doccomment">/// Executes the parser returning any data automatically combing the span of
+/// such data into a symbol.
+</span><span class="kw">pub fn </span>symbol&lt;T, E, P, A&gt;(
+    <span class="kw-2">mut </span>parser: P,
+) -&gt; <span class="kw">impl </span>FnMut(T) -&gt; nom::IResult&lt;T, Symbol&lt;A&gt;, E&gt;
+<span class="kw">where
+    </span>T: Spanned,
+    E: ParseError&lt;T&gt;,
+    P: Parser&lt;T, A, E&gt;,
+{
+    <span class="kw">move </span>|input| {
+        <span class="kw">let </span>start = input.span().start();
+        <span class="kw">let </span>(new_input, data) = parser.parse(input)<span class="question-mark">?</span>;
+        <span class="kw">let </span>end = new_input.span().end();
+        <span class="kw">let </span>span = Span::from_range(start, end);
+        <span class="prelude-val">Ok</span>((new_input, Symbol { span, data }))
+    }
+}
 
 <span class="doccomment">/// Recognizes zero or more UTF-8 alphabetic segments, possibly with diacritics.
 </span><span class="kw">pub fn </span>alpha0&lt;T, E&gt;(input: T) -&gt; nom::IResult&lt;T, T, E&gt;

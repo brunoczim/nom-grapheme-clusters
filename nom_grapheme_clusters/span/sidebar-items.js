@@ -1,1 +1,1 @@
-window.SIDEBAR_ITEMS = {"struct":["IndexedSegments","Segments","Span","SpanContent"]};
+window.SIDEBAR_ITEMS = {"struct":["IndexedSegments","Segments","Span","SpanContent","Symbol"],"trait":["Spanned"]};
