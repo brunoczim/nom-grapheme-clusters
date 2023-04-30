@@ -2,7 +2,7 @@
 //! in order to be used with [`Span`] and [`SpanContent`].
 
 use crate::{
-    span::{Span, SpanContent},
+    span::{Span, SpanContent, Spanned},
     LocatedSegment,
 };
 use nom::{

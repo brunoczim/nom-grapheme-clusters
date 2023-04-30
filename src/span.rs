@@ -616,11 +616,6 @@ pub struct SpanContent {
 }
 
 impl SpanContent {
-    /// Returns the inner span.
-    pub fn span(&self) -> &Span {
-        &self.span
-    }
-
     /// Returns the span contents as a string.
     pub fn as_str(&self) -> &str {
         self.span.as_str()
@@ -1013,5 +1008,135 @@ impl<'this, 'tok> FindToken<LocatedSegment> for &'this SpanContent {
 impl<'tok> FindToken<LocatedSegment> for SpanContent {
     fn find_token(&self, token: LocatedSegment) -> bool {
         (&self).find_token(&token)
+    }
+}
+
+/// A type for metadata associated with a span ("spanned data").
+#[derive(Debug, Clone)]
+pub struct Symbol<T> {
+    /// The span from which metadata comes from.
+    pub span: Span,
+    /// Metadata produced from the span.
+    pub data: T,
+}
+
+impl<T> Symbol<T> {
+    /// Helper method to make symbol reference to data.
+    pub fn as_ref(&self) -> Symbol<&T> {
+        Symbol { span: self.span.clone(), data: &self.data }
+    }
+
+    /// Helper method to make symbol mutably reference to data.
+    pub fn as_mut(&mut self) -> Symbol<&mut T> {
+        Symbol { span: self.span.clone(), data: &mut self.data }
+    }
+
+    /// Helper method to convert data.
+    pub fn map<F, U>(self, mapper: F) -> Symbol<U>
+    where
+        F: FnOnce(T) -> U,
+    {
+        Symbol { span: self.span, data: mapper(self.data) }
+    }
+}
+
+impl<T> PartialEq for Symbol<T>
+where
+    T: PartialEq,
+{
+    fn eq(&self, other: &Self) -> bool {
+        self.data == other.data
+    }
+}
+
+impl<T> PartialEq<T> for Symbol<T>
+where
+    T: PartialEq,
+{
+    fn eq(&self, other: &T) -> bool {
+        self.data == *other
+    }
+}
+
+impl<T> Eq for Symbol<T> where T: Eq {}
+
+impl<T> PartialOrd for Symbol<T>
+where
+    T: PartialOrd,
+{
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        self.data.partial_cmp(&other.data)
+    }
+}
+
+impl<T> PartialOrd<T> for Symbol<T>
+where
+    T: PartialOrd,
+{
+    fn partial_cmp(&self, other: &T) -> Option<Ordering> {
+        self.data.partial_cmp(other)
+    }
+}
+
+impl<T> Ord for Symbol<T>
+where
+    T: Ord,
+{
+    fn cmp(&self, other: &Self) -> Ordering {
+        self.data.cmp(&other.data)
+    }
+}
+
+impl<T> Hash for Symbol<T>
+where
+    T: Hash,
+{
+    fn hash<H>(&self, state: &mut H)
+    where
+        H: Hasher,
+    {
+        self.data.hash(state);
+    }
+}
+
+impl<T> Borrow<T> for Symbol<T> {
+    fn borrow(&self) -> &T {
+        &self.data
+    }
+}
+
+/// Types that have a span associated.
+pub trait Spanned {
+    /// Returns the span associated with this value.
+    fn span(&self) -> Span;
+}
+
+impl Spanned for Span {
+    fn span(&self) -> Span {
+        self.clone()
+    }
+}
+
+impl Spanned for SpanContent {
+    fn span(&self) -> Span {
+        self.span.clone()
+    }
+}
+
+impl<T> Spanned for Symbol<T> {
+    fn span(&self) -> Span {
+        self.span.clone()
+    }
+}
+
+impl Spanned for Location {
+    fn span(&self) -> Span {
+        Span::new(self.clone(), 1)
+    }
+}
+
+impl Spanned for LocatedSegment {
+    fn span(&self) -> Span {
+        self.location().span()
     }
 }

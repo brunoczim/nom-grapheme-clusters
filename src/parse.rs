@@ -2,14 +2,38 @@
 
 mod tag;
 
-use crate::LocatedSegment;
+use crate::{
+    span::{Spanned, Symbol},
+    LocatedSegment,
+    Span,
+};
 use nom::{
     combinator::{opt, recognize},
     error::{ErrorKind, ParseError},
     FindToken,
+    Parser,
 };
 use std::ops::{RangeFrom, RangeTo};
 pub use tag::Tag;
+
+/// Executes the parser returning any data automatically combing the span of
+/// such data into a symbol.
+pub fn symbol<T, E, P, A>(
+    mut parser: P,
+) -> impl FnMut(T) -> nom::IResult<T, Symbol<A>, E>
+where
+    T: Spanned,
+    E: ParseError<T>,
+    P: Parser<T, A, E>,
+{
+    move |input| {
+        let start = input.span().start();
+        let (new_input, data) = parser.parse(input)?;
+        let end = new_input.span().end();
+        let span = Span::from_range(start, end);
+        Ok((new_input, Symbol { span, data }))
+    }
+}
 
 /// Recognizes zero or more UTF-8 alphabetic segments, possibly with diacritics.
 pub fn alpha0<T, E>(input: T) -> nom::IResult<T, T, E>
