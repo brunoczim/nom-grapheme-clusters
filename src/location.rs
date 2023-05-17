@@ -245,19 +245,19 @@ impl fmt::Display for LocatedSegment {
 
 impl PartialEq for LocatedSegment {
     fn eq(&self, other: &Self) -> bool {
-        **self == **other
+        self.as_str() == other.as_str()
     }
 }
 
 impl PartialEq<str> for LocatedSegment {
     fn eq(&self, other: &str) -> bool {
-        &**self == other
+        self.as_str() == other
     }
 }
 
 impl<'seg> PartialEq<&'seg str> for LocatedSegment {
     fn eq(&self, other: &&'seg str) -> bool {
-        &*self == other
+        self.as_str() == *other
     }
 }
 
@@ -271,19 +271,19 @@ impl PartialOrd for LocatedSegment {
 
 impl PartialOrd<str> for LocatedSegment {
     fn partial_cmp(&self, other: &str) -> Option<Ordering> {
-        (**self).partial_cmp(other)
+        self.as_str().partial_cmp(other)
     }
 }
 
 impl<'seg> PartialOrd<&'seg str> for LocatedSegment {
     fn partial_cmp(&self, other: &&'seg str) -> Option<Ordering> {
-        (**self).partial_cmp(other)
+        self.as_str().partial_cmp(*other)
     }
 }
 
 impl Ord for LocatedSegment {
     fn cmp(&self, other: &Self) -> Ordering {
-        (**self).cmp(&**other)
+        self.as_str().cmp(other.as_str())
     }
 }
 
