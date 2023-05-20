@@ -227,11 +227,6 @@ impl LocatedSegment {
     pub fn is_whitespace(&self) -> bool {
         self.chars().all(char::is_whitespace)
     }
-
-    /// Returns a span comprising this single segment.
-    pub fn span(&self) -> Span {
-        Span::new_unchecked(self.location().clone(), 1)
-    }
 }
 
 impl Deref for LocatedSegment {
