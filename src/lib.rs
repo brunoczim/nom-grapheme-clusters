@@ -2,8 +2,8 @@
 //!
 //! # Examples
 //! ```
-//! use nom_grapheme_clusters::{Source, Span, SpanContent, parse::Tag};
-//! use nom::{IResult, combinator::map};
+//! use nom::{combinator::map, IResult};
+//! use nom_grapheme_clusters::{parse::Tag, Source, Span, SpanContent};
 //!
 //! #[derive(Debug, Clone, PartialEq, Eq)]
 //! struct ParsedAtn {
@@ -58,6 +58,7 @@
 pub mod source;
 mod location;
 pub mod span;
+#[cfg(feature = "parse")]
 pub mod parse;
 
 pub use location::{LocatedSegment, Location};
