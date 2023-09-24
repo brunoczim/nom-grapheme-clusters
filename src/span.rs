@@ -7,6 +7,7 @@ use crate::{
     location::{LocatedSegment, Location},
     source::Source,
 };
+#[cfg(feature = "parse")]
 use nom::{
     error::ParseError,
     Compare,
@@ -18,12 +19,13 @@ use nom::{
     Offset,
     Slice,
 };
+#[cfg(feature = "parse")]
+use std::iter::Enumerate;
 use std::{
     borrow::Borrow,
     cmp::Ordering,
     fmt,
     hash::{Hash, Hasher},
-    iter::Enumerate,
     ops::{Bound, Deref, RangeBounds},
 };
 
@@ -245,18 +247,21 @@ impl IntoIterator for Span {
     }
 }
 
+#[cfg(feature = "parse")]
 impl InputLength for Span {
     fn input_len(&self) -> usize {
         self.len()
     }
 }
 
+#[cfg(feature = "parse")]
 impl<'this> InputLength for &'this Span {
     fn input_len(&self) -> usize {
         self.len()
     }
 }
 
+#[cfg(feature = "parse")]
 impl<R> Slice<R> for Span
 where
     R: RangeBounds<usize> + fmt::Debug + Clone,
@@ -269,6 +274,7 @@ where
     }
 }
 
+#[cfg(feature = "parse")]
 impl InputIter for Span {
     type Item = LocatedSegment;
     type Iter = Enumerate<Self::IterElem>;
@@ -298,6 +304,7 @@ impl InputIter for Span {
     }
 }
 
+#[cfg(feature = "parse")]
 impl InputTake for Span {
     fn take(&self, count: usize) -> Self {
         self.slice(count ..)
@@ -308,6 +315,7 @@ impl InputTake for Span {
     }
 }
 
+#[cfg(feature = "parse")]
 impl InputTakeAtPosition for Span {
     type Item = LocatedSegment;
 
@@ -382,12 +390,14 @@ impl InputTakeAtPosition for Span {
     }
 }
 
+#[cfg(feature = "parse")]
 impl Offset for Span {
     fn offset(&self, second: &Self) -> usize {
         second.start().position() - self.start().position()
     }
 }
 
+#[cfg(feature = "parse")]
 impl<'input> Compare<&'input Span> for Span {
     fn compare(&self, input: &'input Span) -> nom::CompareResult {
         let mut this_segments = self.segments();
@@ -426,6 +436,7 @@ impl<'input> Compare<&'input Span> for Span {
     }
 }
 
+#[cfg(feature = "parse")]
 impl Compare<Span> for Span {
     fn compare(&self, input: Span) -> nom::CompareResult {
         self.compare(&input)
@@ -436,6 +447,7 @@ impl Compare<Span> for Span {
     }
 }
 
+#[cfg(feature = "parse")]
 impl<'input> Compare<&'input SpanContent> for Span {
     fn compare(&self, input: &'input SpanContent) -> nom::CompareResult {
         self.compare(input.span())
@@ -449,6 +461,7 @@ impl<'input> Compare<&'input SpanContent> for Span {
     }
 }
 
+#[cfg(feature = "parse")]
 impl Compare<SpanContent> for Span {
     fn compare(&self, input: SpanContent) -> nom::CompareResult {
         self.compare(input.span())
@@ -459,6 +472,7 @@ impl Compare<SpanContent> for Span {
     }
 }
 
+#[cfg(feature = "parse")]
 impl<'this, 'input> Compare<&'input Span> for &'this Span {
     fn compare(&self, input: &'input Span) -> nom::CompareResult {
         (**self).compare(input)
@@ -469,6 +483,7 @@ impl<'this, 'input> Compare<&'input Span> for &'this Span {
     }
 }
 
+#[cfg(feature = "parse")]
 impl<'this> Compare<Span> for &'this Span {
     fn compare(&self, input: Span) -> nom::CompareResult {
         (**self).compare(input)
@@ -479,6 +494,7 @@ impl<'this> Compare<Span> for &'this Span {
     }
 }
 
+#[cfg(feature = "parse")]
 impl<'this, 'input> Compare<&'input SpanContent> for &'this Span {
     fn compare(&self, input: &'input SpanContent) -> nom::CompareResult {
         (**self).compare(input)
@@ -492,6 +508,7 @@ impl<'this, 'input> Compare<&'input SpanContent> for &'this Span {
     }
 }
 
+#[cfg(feature = "parse")]
 impl<'this> Compare<SpanContent> for &'this Span {
     fn compare(&self, input: SpanContent) -> nom::CompareResult {
         (**self).compare(input)
@@ -502,48 +519,56 @@ impl<'this> Compare<SpanContent> for &'this Span {
     }
 }
 
+#[cfg(feature = "parse")]
 impl<'this, 'tok> FindToken<&'tok str> for &'this Span {
     fn find_token(&self, token: &'tok str) -> bool {
         self.segments().any(|segment| segment.as_str() == token)
     }
 }
 
+#[cfg(feature = "parse")]
 impl<'tok> FindToken<&'tok str> for Span {
     fn find_token(&self, token: &'tok str) -> bool {
         (&self).find_token(token)
     }
 }
 
+#[cfg(feature = "parse")]
 impl<'this, 'tok, 'tok_ref> FindToken<&'tok_ref &'tok str> for &'this Span {
     fn find_token(&self, token: &'tok_ref &'tok str) -> bool {
         self.find_token(*token)
     }
 }
 
+#[cfg(feature = "parse")]
 impl<'tok, 'tok_ref> FindToken<&'tok_ref &'tok str> for Span {
     fn find_token(&self, token: &'tok_ref &'tok str) -> bool {
         (&self).find_token(token)
     }
 }
 
+#[cfg(feature = "parse")]
 impl<'this, 'tok> FindToken<&'tok LocatedSegment> for &'this Span {
     fn find_token(&self, token: &'tok LocatedSegment) -> bool {
         self.segments().any(|segment| &segment == token)
     }
 }
 
+#[cfg(feature = "parse")]
 impl<'tok> FindToken<&'tok LocatedSegment> for Span {
     fn find_token(&self, token: &'tok LocatedSegment) -> bool {
         (&self).find_token(token)
     }
 }
 
+#[cfg(feature = "parse")]
 impl<'this, 'tok> FindToken<LocatedSegment> for &'this Span {
     fn find_token(&self, token: LocatedSegment) -> bool {
         self.find_token(&token)
     }
 }
 
+#[cfg(feature = "parse")]
 impl<'tok> FindToken<LocatedSegment> for Span {
     fn find_token(&self, token: LocatedSegment) -> bool {
         (&self).find_token(&token)
@@ -762,18 +787,21 @@ impl IntoIterator for SpanContent {
     }
 }
 
+#[cfg(feature = "parse")]
 impl InputLength for SpanContent {
     fn input_len(&self) -> usize {
         self.span.len()
     }
 }
 
+#[cfg(feature = "parse")]
 impl<'this> InputLength for &'this SpanContent {
     fn input_len(&self) -> usize {
         self.span.len()
     }
 }
 
+#[cfg(feature = "parse")]
 impl<R> Slice<R> for SpanContent
 where
     R: RangeBounds<usize> + fmt::Debug + Clone,
@@ -783,6 +811,7 @@ where
     }
 }
 
+#[cfg(feature = "parse")]
 impl InputIter for SpanContent {
     type Item = LocatedSegment;
     type Iter = Enumerate<Self::IterElem>;
@@ -808,6 +837,7 @@ impl InputIter for SpanContent {
     }
 }
 
+#[cfg(feature = "parse")]
 impl InputTake for SpanContent {
     fn take(&self, count: usize) -> Self {
         self.slice(count ..)
@@ -818,6 +848,7 @@ impl InputTake for SpanContent {
     }
 }
 
+#[cfg(feature = "parse")]
 impl InputTakeAtPosition for SpanContent {
     type Item = LocatedSegment;
 
@@ -892,12 +923,14 @@ impl InputTakeAtPosition for SpanContent {
     }
 }
 
+#[cfg(feature = "parse")]
 impl Offset for SpanContent {
     fn offset(&self, second: &Self) -> usize {
         self.span.offset(&second.span)
     }
 }
 
+#[cfg(feature = "parse")]
 impl<'input> Compare<&'input Span> for SpanContent {
     fn compare(&self, input: &'input Span) -> nom::CompareResult {
         self.span.compare(input)
@@ -908,6 +941,7 @@ impl<'input> Compare<&'input Span> for SpanContent {
     }
 }
 
+#[cfg(feature = "parse")]
 impl Compare<Span> for SpanContent {
     fn compare(&self, input: Span) -> nom::CompareResult {
         self.compare(&input)
@@ -918,6 +952,7 @@ impl Compare<Span> for SpanContent {
     }
 }
 
+#[cfg(feature = "parse")]
 impl<'input> Compare<&'input SpanContent> for SpanContent {
     fn compare(&self, input: &'input SpanContent) -> nom::CompareResult {
         self.compare(input.span())
@@ -931,6 +966,7 @@ impl<'input> Compare<&'input SpanContent> for SpanContent {
     }
 }
 
+#[cfg(feature = "parse")]
 impl Compare<SpanContent> for SpanContent {
     fn compare(&self, input: SpanContent) -> nom::CompareResult {
         self.compare(input.span())
@@ -941,6 +977,7 @@ impl Compare<SpanContent> for SpanContent {
     }
 }
 
+#[cfg(feature = "parse")]
 impl<'this, 'input> Compare<&'input Span> for &'this SpanContent {
     fn compare(&self, input: &'input Span) -> nom::CompareResult {
         (**self).compare(input)
@@ -951,6 +988,7 @@ impl<'this, 'input> Compare<&'input Span> for &'this SpanContent {
     }
 }
 
+#[cfg(feature = "parse")]
 impl<'this> Compare<Span> for &'this SpanContent {
     fn compare(&self, input: Span) -> nom::CompareResult {
         (**self).compare(input)
@@ -961,6 +999,7 @@ impl<'this> Compare<Span> for &'this SpanContent {
     }
 }
 
+#[cfg(feature = "parse")]
 impl<'this, 'input> Compare<&'input SpanContent> for &'this SpanContent {
     fn compare(&self, input: &'input SpanContent) -> nom::CompareResult {
         (**self).compare(input)
@@ -974,6 +1013,7 @@ impl<'this, 'input> Compare<&'input SpanContent> for &'this SpanContent {
     }
 }
 
+#[cfg(feature = "parse")]
 impl<'this> Compare<SpanContent> for &'this SpanContent {
     fn compare(&self, input: SpanContent) -> nom::CompareResult {
         (**self).compare(input)
@@ -984,18 +1024,21 @@ impl<'this> Compare<SpanContent> for &'this SpanContent {
     }
 }
 
+#[cfg(feature = "parse")]
 impl<'this, 'tok> FindToken<&'tok str> for &'this SpanContent {
     fn find_token(&self, token: &'tok str) -> bool {
         self.segments().any(|segment| segment.as_str() == token)
     }
 }
 
+#[cfg(feature = "parse")]
 impl<'tok> FindToken<&'tok str> for SpanContent {
     fn find_token(&self, token: &'tok str) -> bool {
         (&self).find_token(token)
     }
 }
 
+#[cfg(feature = "parse")]
 impl<'this, 'tok, 'tok_ref> FindToken<&'tok_ref &'tok str>
     for &'this SpanContent
 {
@@ -1004,30 +1047,35 @@ impl<'this, 'tok, 'tok_ref> FindToken<&'tok_ref &'tok str>
     }
 }
 
+#[cfg(feature = "parse")]
 impl<'tok, 'tok_ref> FindToken<&'tok_ref &'tok str> for SpanContent {
     fn find_token(&self, token: &'tok_ref &'tok str) -> bool {
         (&self).find_token(token)
     }
 }
 
+#[cfg(feature = "parse")]
 impl<'this, 'tok> FindToken<&'tok LocatedSegment> for &'this SpanContent {
     fn find_token(&self, token: &'tok LocatedSegment) -> bool {
         self.segments().any(|segment| &segment == token)
     }
 }
 
+#[cfg(feature = "parse")]
 impl<'tok> FindToken<&'tok LocatedSegment> for SpanContent {
     fn find_token(&self, token: &'tok LocatedSegment) -> bool {
         (&self).find_token(token)
     }
 }
 
+#[cfg(feature = "parse")]
 impl<'this, 'tok> FindToken<LocatedSegment> for &'this SpanContent {
     fn find_token(&self, token: LocatedSegment) -> bool {
         self.find_token(&token)
     }
 }
 
+#[cfg(feature = "parse")]
 impl<'tok> FindToken<LocatedSegment> for SpanContent {
     fn find_token(&self, token: LocatedSegment) -> bool {
         (&self).find_token(&token)
