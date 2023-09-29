@@ -95,11 +95,8 @@ impl Span {
                 start, end
             )
         }
-        if end.position() <= start.position() {
-            panic!(
-                "Start ({}) of span is equals or past beyond end ({})",
-                start, end
-            )
+        if end.position() + 1 < start.position() {
+            panic!("Start ({}) of span is past beyond end ({})", start, end)
         }
 
         let length = end.position() + 1 - start.position();
