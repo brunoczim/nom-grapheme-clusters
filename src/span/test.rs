@@ -1,5 +1,71 @@
-use crate::source::Source;
+use crate::{source::Source, Span};
 use nom::Slice;
+
+#[test]
+fn unitary_range_exclusive() {
+    let source = Source::new("foo.rs", "abcdef");
+    let segments: Vec<_> = source.full_span().segments().collect();
+    let span = Span::from_range(
+        segments[1].location().clone(),
+        segments[2].location().clone(),
+    );
+    assert_eq!(span.as_str(), "b");
+}
+
+#[test]
+fn empty_range_exclusive() {
+    let source = Source::new("foo.rs", "abcdef");
+    let segments: Vec<_> = source.full_span().segments().collect();
+    let span = Span::from_range(
+        segments[1].location().clone(),
+        segments[1].location().clone(),
+    );
+    assert_eq!(span.as_str(), "");
+}
+
+#[test]
+#[should_panic]
+fn invalid_range_exclusive() {
+    let source = Source::new("foo.rs", "abcdef");
+    let segments: Vec<_> = source.full_span().segments().collect();
+    Span::from_range(
+        segments[1].location().clone(),
+        segments[0].location().clone(),
+    );
+}
+
+#[test]
+fn unitary_range_inclusive_inclusive() {
+    let source = Source::new("foo.rs", "abcdef");
+    let segments: Vec<_> = source.full_span().segments().collect();
+    let span = Span::from_range_inclusive(
+        segments[2].location().clone(),
+        segments[2].location().clone(),
+    );
+    assert_eq!(span.as_str(), "c");
+}
+
+#[test]
+fn empty_range_inclusive_inclusive() {
+    let source = Source::new("foo.rs", "abcdef");
+    let segments: Vec<_> = source.full_span().segments().collect();
+    let span = Span::from_range_inclusive(
+        segments[2].location().clone(),
+        segments[1].location().clone(),
+    );
+    assert_eq!(span.as_str(), "");
+}
+
+#[test]
+#[should_panic]
+fn invalid_range_inclusive_inclusive() {
+    let source = Source::new("foo.rs", "abcdef");
+    let segments: Vec<_> = source.full_span().segments().collect();
+    Span::from_range_inclusive(
+        segments[2].location().clone(),
+        segments[0].location().clone(),
+    );
+}
 
 #[test]
 fn segments() {
